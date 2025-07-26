@@ -1,0 +1,23 @@
+#%RAML 1.0 Library
+
+traits:
+  errorHandling:
+    responses:
+      400:
+        description: Bad Request
+        body:
+          application/json:
+            type: types.ErrorResponse
+            example: !include ../examples/error-response-example.json
+      404:
+        description: Not Found
+        body:
+          application/json:
+            type: types.ErrorResponse
+            example: !include ../examples/error-response-example.json
+      500:
+        description: Internal Server Error
+        body:
+          application/json:
+            type: types.ErrorResponse
+            example: !include ../examples/error-response-example.json

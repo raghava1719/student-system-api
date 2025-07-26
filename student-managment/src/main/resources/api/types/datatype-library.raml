@@ -1,0 +1,92 @@
+#%RAML 1.0 Library
+
+types:
+  Student:
+    type: object
+    properties:
+      name:
+        type: string
+        required: true
+      email:
+        type: string
+        required: true
+        pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+      admissionPercentage:
+        type: number
+        required: true
+        minimum: 0
+        maximum: 100
+
+  ScoreInput:
+    type: object
+    properties:
+      subject-1: 
+        type: number
+        required: true
+        minimum: 0
+      subject-2: 
+        type: number
+        required: true
+        minimum: 0
+      subject-3: 
+        type: number
+        required: true
+        minimum: 0
+
+  UpdateStudent:
+    type: object
+    properties:
+      section:
+        type: string
+        enum: [A, B, C, D, E]
+        required: false
+      cumulatedScore:
+        type: number
+        maximum: 1500
+        required: false
+        minimum: 0
+      filePath:
+        type: string
+        required: false
+
+  CreateRecord:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+        pattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+      admission_percentage:
+        type: number
+        minimum: 0
+        maximum: 100
+      address:
+        type: string
+      current_section:
+        type: string
+        enum: [A, B, C, D, E]
+      cumulated_score:
+        type: number
+      days_left:
+        type: integer
+        minimum: 0
+        maximum: 5
+      report_file_path:
+        type: string | nil
+        required: false
+      created_date:
+        type: string
+        required: true
+
+  ErrorResponse:
+    type: object
+    properties:
+      errorCode:
+        type: string
+        required: true
+      message:
+        type: string
+        required: true

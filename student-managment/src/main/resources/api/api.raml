@@ -1,0 +1,116 @@
+#%RAML 1.0
+title: Student System API
+version: v1
+mediaType: application/json
+
+uses:
+  types: types/datatype-library.raml
+  traits: traits/error-handling.raml
+
+/student/register:
+  post:
+    is: [traits.errorHandling]
+    description: Register a new student in Salesforce.
+    body:
+      application/json:
+        type: types.Student
+        example: !include examples/student-example.json
+    responses:
+      201:
+        body:
+          application/json:
+            example: |
+              {
+                "studentId": "0031X00000abcdeQAD",
+                "message": "Student registered successfully"
+              }
+      
+
+/student/{ID}:
+  patch:
+    is: [traits.errorHandling]
+    description: Update student section, accumulated score or file path.
+    body:
+      application/json:
+        type: types.UpdateStudent
+        example: !include examples/update-student-example.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "message": "Student updated successfully"
+              }
+
+  delete:
+    is: [traits.errorHandling]
+    description: Delete a student by ID.
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "message": "Student deleted successfully"
+              }
+
+/student/{ID}/update-score/{day}:
+  uriParameters:
+    ID:
+      type: string
+      required: true
+    day:
+      type: integer
+      required: true
+      minimum: 1
+      maximum: 5
+  post:
+    is: [traits.errorHandling]
+    description: Update student score for a given day.
+    body:
+      application/json:
+        type: types.ScoreInput
+        example: !include examples/score-input-example.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "message": "Score updated" 
+                }
+
+
+/student/{ID}/get-score:
+  get:
+    is: [traits.errorHandling]
+    queryParameters:
+      day:
+        type: integer
+        minimum: 0
+        maximum: 5
+        required: false
+    description: Fetch all scores for a student.
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/student-scores-example.json
+
+/student/create:
+  post:
+    is: [traits.errorHandling]
+    description: Create a day 1 record for the student in the database.
+    body:
+      application/json:
+        type: types.CreateRecord
+        example: !include examples/create-day1-record-example.json
+    responses:
+      201:
+        body:
+          application/json:
+            example: |
+              {
+                "message": "Record created"
+              }
