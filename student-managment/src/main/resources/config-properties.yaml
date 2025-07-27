@@ -1,0 +1,12 @@
+group-id: "8b81c0fb-b4b0-4dc3-ab37-efab51816ea1"
+
+environment-client:
+  id: "![g4O5YWmcNeD/AglTc9GvXQKqVRLYxbv1s/9QUd3bI8PkejJ3LpS/kQ==]"
+  secret: "![BayyMw0gspJyntcHVBObiINP9kKXj7UrTv/W8/oBq5zXVTp3DU8jzQ==]"
+
+database:
+  username: "![fG2AIjSIDMQ=]"
+  password: "![WfZRmAxg8DY=]"
+  databaseName: "dummy"
+  host: "localhost"
+  port: "3306"
