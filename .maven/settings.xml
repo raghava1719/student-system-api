@@ -1,7 +1,7 @@
 <settings>
     <servers>
         <server>
-            <id>ca.anypoint.credentials</id>
+            <id>anypoint-exchange-v3</id>
             <username>${username}</username>
             <password>${password}</password>
         </server>
