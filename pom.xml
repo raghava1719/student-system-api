@@ -41,7 +41,7 @@
 						<server>ca.anypoint.credentials</server>
 						<properties>
 							<anypoint.platform.client_id>${ANYPOINT_CLIENT_ID}</anypoint.platform.client_id>
-  							<anypoint.platform.client_secret>${ANYPOINT_CLIENT_SECRET}</anypoint.platform.client_secret>
+							<anypoint.platform.client_secret>${ANYPOINT_CLIENT_SECRET}</anypoint.platform.client_secret>
 						</properties>
 						<applicationName>student-system-api</applicationName>
 						<replicas>1</replicas>
@@ -56,6 +56,12 @@
 						</integrations>
 					</cloudhub2Deployment>
 					<classifier>mule-application</classifier>
+					<sharedLibraries>
+						<sharedLibrary>
+							<groupId>mysql</groupId>
+							<artifactId>mysql-connector-java</artifactId>
+						</sharedLibrary>
+					</sharedLibraries>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -92,6 +98,17 @@
 			<artifactId>mule-secure-configuration-property-module</artifactId>
 			<version>1.2.7</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.connectors</groupId>
+			<artifactId>mule-db-connector</artifactId>
+			<version>1.14.13</version>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.30</version>
 		</dependency>
 	</dependencies>
 

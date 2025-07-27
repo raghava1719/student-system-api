@@ -5,8 +5,8 @@ environment-client:
   secret: "![BayyMw0gspJyntcHVBObiINP9kKXj7UrTv/W8/oBq5zXVTp3DU8jzQ==]"
 
 database:
-  username: "![fG2AIjSIDMQ=]"
-  password: "![WfZRmAxg8DY=]"
-  databaseName: "dummy"
+  username: "root"
+  password: "1234"
+  databaseName: "school"
   host: "localhost"
   port: "3306"
