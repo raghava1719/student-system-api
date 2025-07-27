@@ -1,9 +1,9 @@
 <settings>
     <servers>
         <server>
-          <id>ca.anypoint.credentials</id>
-          <username>${env.USERNAME}</username>
-          <password>${env.PASSWORD}</password>
+            <id>ca.anypoint.credentials</id>
+            <username>${username}</username>
+            <password>${password}</password>
         </server>
     </servers>
 </settings>
