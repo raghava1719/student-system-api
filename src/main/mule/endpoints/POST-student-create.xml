@@ -5,14 +5,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="post:\student\create:application\json:api-config" doc:id="12ae1412-f665-479e-975d-7edadea1c9d6" >
+		<flow-ref doc:name="Flow Reference" doc:id="c6a12b4a-edd6-4c03-902e-21f0d150015c" name="create-student-in-database-sub-flow"/>
 		<ee:transform doc:name="Transform Message" doc:id="0f7ea6e3-1b5f-4b0d-91b6-2705f65aaaa6" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-{
-  message: "Day 1 record created"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>

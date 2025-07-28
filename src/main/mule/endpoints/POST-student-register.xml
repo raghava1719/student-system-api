@@ -5,16 +5,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="post:\student\register:application\json:api-config" doc:id="40762738-6ab0-42d6-8166-8d4ad445e2d6" >
-		<ee:transform doc:name="Transform Message" doc:id="3bd115b7-8b3c-4e87-a239-982ab5635e07" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-  studentId: "0031X00000abcdeQAD",
-  message: "Student registered successfully"
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="ca20e105-da7c-4eb7-be67-4f57d057e9ad" message='#["Received request - Correlation ID: "++ (correlationId)]'/>
+		<flow-ref doc:name="Flow Reference" doc:id="321b5f8f-f63b-4ccd-a2db-8a7aecef9133" name="register-student-in-salesforce-sub-flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="167fe9f3-8a46-4d81-ad93-0063635553b6" message='#["Response request - Correlation ID: "++ (correlationId)]'/>
 	</flow>
 </mule>

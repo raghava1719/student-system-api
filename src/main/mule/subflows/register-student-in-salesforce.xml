@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<sub-flow name="register-student-in-salesforce-sub-flow" doc:id="9f4e661a-eb2d-4b2c-bf2b-9442c67fc729" >
+		<ee:transform doc:name="Transform Message" doc:id="5cd58be6-47e0-48bb-a651-5c1faf8de9ef" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Name:payload.name,
+	Admission_Percentage__c:payload.admissionPercentage,
+	Email__c:payload.email,
+	Address__c:payload.address default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="Create" doc:id="092ef527-4da5-40af-a0a3-8243e1d1783f" config-ref="Salesforce_Config" type="Student__c">
+			<salesforce:records ><![CDATA[#[[payload]]]]></salesforce:records>
+		</salesforce:create>
+		<ee:transform doc:name="Transform Message" doc:id="225e10e7-dbcf-4a19-9760-7f7192f474af" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="a772ba7f-9fa1-488e-99e4-bd384aedd4e7" >
+			<when expression="#[payload.items[0].statusCode==null]">
+				<ee:transform doc:name="Transform Message" doc:id="491446c2-feb0-478a-9c3f-8bf75b0a76f9">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  studentId: payload.items[0].id,
+  message: "Student registered successfully"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<when expression='#[payload.items[0].statusCode=="DUPLICATE_VALUE"]'>
+				<ee:transform doc:name="Transform Message" doc:id="024ad3fa-ef70-4f96-a1c5-28053d64f3fa" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:payload.items[0].payload.errors.message[0] contains "Email__c" then "Student with this Email already exist."
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="4f5b7eed-2390-4c64-8e14-cc102aba981b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

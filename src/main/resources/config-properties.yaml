@@ -10,3 +10,8 @@ database:
   databaseName: "school"
   host: "localhost"
   port: "3306"
+
+salesforce:
+  username: raghavaraghava159-zhpj@force.com
+  password: "![WzdpnuCE9RN0uWV9vo+RUQ==]"
+  token: "![lchPml9fpPJJjWJCp9cFBnK3Z8aLt6FiDnZ9RbOgw90=]"

@@ -4,12 +4,12 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<flow name="delete:\student\(ID):api-config" doc:id="82a336a9-151b-4788-9962-4d7ecf1c6c8d" >
-		<ee:transform doc:name="set variabes ID" doc:id="e22c88b7-47d0-43df-aa27-7ffe3f55b6a6" >
+	<flow name="get:\student\(ID):api-config" doc:id="0e24209a-d0bf-43ed-8cee-1d91cde74b17" >
+		<ee:transform doc:name="Transform Message" doc:id="2c30a5ec-e8b4-4880-af64-2550471fb155" >
 			<ee:variables >
 				<ee:set-variable variableName="ID" ><![CDATA[attributes.uriParams.'ID']]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<flow-ref doc:name="Flow Reference" doc:id="27c26266-3927-4d16-a535-877e8ba430f4" name="delete-student-details-sub-flow"/>
+		<flow-ref doc:name="Flow Reference" doc:id="505bf3ad-bae3-4274-8808-0ea1de40767e" name="fetch-student-details-sub-flow"/>
 	</flow>
 </mule>
