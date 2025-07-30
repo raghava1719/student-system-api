@@ -46,24 +46,6 @@ output application/json
 				</ee:message>
 			</ee:transform>
 			<error-handler>
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="05718fc6-e9d7-43b8-af3a-88ad5178d22d" type="DB:QUERY_EXECUTION">
-					<ee:transform doc:name="Transform Message" doc:id="45e38e0d-f5a5-49a6-ad28-7ad8337dcf39">
-						<ee:message>
-							<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  errorType: error.errorType.identifier,
-  message_from_system:error.description,
-  message: "Student with ID already exists. Please use a unique ID."
-}
-]]></ee:set-payload>
-						</ee:message>
-						<ee:variables>
-							<ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
-						</ee:variables>
-					</ee:transform>
-				</on-error-continue>
 					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3fcf4b31-c835-4780-80a0-c3e1075303c4" type="DB:CONNECTIVITY">
 						<logger level="WARN" doc:name="Logger" doc:id="98fa71c5-2ebe-4048-8918-5d24ea893733" message='#["Connecting issue to Database ...Retrying...."]'/>
 					</on-error-propagate>

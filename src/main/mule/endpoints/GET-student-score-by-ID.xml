@@ -8,20 +8,16 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<ee:transform doc:name="Transform Message" doc:id="2c30a5ec-e8b4-4880-af64-2550471fb155" >
 			<ee:variables >
 				<ee:set-variable variableName="ID" ><![CDATA[attributes.uriParams.'ID']]></ee:set-variable>
+				<ee:set-variable variableName="day" ><![CDATA[attributes.queryParams.day]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="c924231c-abc4-49fa-a1bc-79c2647f5042" name="fetch-student-marks-by-id-and-day-sub-flow"/>
 		<ee:transform doc:name="Transform Message1" doc:id="7b0869c8-c147-4659-aead-1751e1712e99" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-[
-  {
-    "subject-1": 80,
-    "subject-2": 80,
-    "subject-3": 80
-  }
-] as Array {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>

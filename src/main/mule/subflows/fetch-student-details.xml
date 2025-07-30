@@ -43,13 +43,12 @@ output application/json
 ---
 {
   errorType: error.errorType.identifier,
-  message_from_system:error.description,
-  message: ""
+  message_from_system:error.description
 }
 ]]></ee:set-payload>
 							</ee:message>
 							<ee:variables >
-								<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+								<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
 							</ee:variables>
 						</ee:transform>
 					</on-error-continue>

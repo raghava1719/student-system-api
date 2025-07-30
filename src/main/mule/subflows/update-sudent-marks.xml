@@ -94,9 +94,14 @@ output application/json
 output application/json
 ---
 {
-	message:"Duplicate record entry"
+  errorType: error.errorType.identifier,
+  message_from_system:error.description,
+  message:"Duplicate record found."
 }]]></ee:set-payload>
 								</ee:message>
+									<ee:variables >
+										<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+									</ee:variables>
 							</ee:transform>
 						</on-error-continue>
 					</error-handler>
@@ -109,7 +114,7 @@ output application/json
 		</choice>
 	</sub-flow>
 	<sub-flow name="validate-marks-payload-sub-flow" doc:id="eb903f3e-237f-4d50-9123-7fcd0b8a1d9c" >
-		<logger level="INFO" doc:name="Logger" doc:id="b37d4d6d-9e89-40d2-85de-f40fb1b4afe7" />
+		<logger level="INFO" doc:name="Logger" doc:id="b37d4d6d-9e89-40d2-85de-f40fb1b4afe7" message="#[payload]"/>
 		<ee:transform doc:name="Transform Message" doc:id="7a5f5814-c1bd-4ab3-9860-65996a5779a0" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -121,15 +126,22 @@ var section_marks = {
 	"D":600,
 	"E":300
 }
+var dayserror = if(6 - payload.days_left as Number == vars.day as Number) false else true
 var marks = vars.marks
 var subject_limt = section_marks[payload.current_section]/3
-var result =	if(marks."subject-1">subject_limt)
-						" subject-1 " else ""
-						++ if(marks."subject-2">subject_limt)
-							" subject-2 " else ""++ if(marks."subject-3">subject_limt)
-								" subject-3 "  else ""
+var result =	(if(marks."subject-1">subject_limt)
+						" subject-1 " else "")
+						++ (if(marks."subject-2">subject_limt)
+							" subject-2 " else "")++ (if(marks."subject-3">subject_limt)
+								" subject-3 "  else "")
 ---
-if(result=="")
+if(dayserror and payload.days_left as Number != 0)
+{
+	status : false,
+	correlationId:vars.correlationId,
+	message : "Please update day "++(6 - payload.days_left as Number)++" marks."
+}	
+else if(result=="")
 	payload ++{status :true}
 else
 {
