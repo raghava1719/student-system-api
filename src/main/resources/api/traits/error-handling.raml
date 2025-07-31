@@ -1,6 +1,13 @@
 #%RAML 1.0 Library
 
 traits:
+  requireCorrelationId:
+    headers:
+      x-correlation-id:
+        type: string
+        required: true
+        description: Correlation ID for tracking requests across services
+
   errorHandling:
     responses:
       400:

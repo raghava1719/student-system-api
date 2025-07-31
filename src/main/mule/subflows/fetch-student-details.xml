@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="fetch-student-details-sub-flow" doc:id="1b7674b7-994f-43a8-882d-7811178a8218" >
+		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="99d9f193-6ecf-4215-bb3c-a9e488353e42" millisBetweenRetries="5000">
+			<try doc:name="Try" doc:id="ab253315-181b-4e17-a2d1-5faf683874d5" >
+				<db:select doc:name="Select" doc:id="7db15de5-a8ea-4cc3-b9c9-e7e3b84e97c0" config-ref="Database_Config">
+					<db:sql ><![CDATA[SELECT * FROM students WHERE ID=:id;]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	id : vars.ID
+}]]]></db:input-parameters>
+				</db:select>
+				<ee:transform doc:name="Transform Message" doc:id="bbfa0d47-9ebe-48fd-8070-436ca61b0b37" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(isEmpty(payload))
+	{
+		errorCode:404,
+		message:"Student with ID:"++(vars.ID default "")++" not found"
+	}
+	else
+		payload[0]]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[if(isEmpty(payload))
+	404
+else
+	200]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="fc3f7c9c-ae60-46f1-8ab9-306241facd16" type="DB:QUERY_EXECUTION">
+						<ee:transform doc:name="Transform Message" doc:id="ca1d8178-23b2-4d35-9818-8f2172a22b2e" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  errorType: error.errorType.identifier,
+  message_from_system:error.description
+}
+]]></ee:set-payload>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+					</on-error-continue>
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dbb13729-9875-4efd-8bad-6cfaddea02fc" type="DB:CONNECTIVITY">
+						<logger level="WARN" doc:name="Logger" doc:id="ddd7f62b-e5f7-47bb-99ce-86fd72fcf544" message='#["Connecting issue to Database ...Retrying...."]' />
+					</on-error-propagate>
+				</error-handler>
+			</try>
+		</until-successful>
+	</sub-flow>
+</mule>

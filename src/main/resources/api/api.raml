@@ -27,6 +27,16 @@ uses:
       
 
 /student/{ID}:
+  get:
+    is: [traits.errorHandling]
+    description: get student details from salesforce ID.
+    responses:
+      200:
+        body:
+          application/json:
+            type: types.StudentResponse
+            example: !include examples/student-response-example.json
+          
   patch:
     is: [traits.errorHandling]
     description: Update student section, accumulated score or file path.

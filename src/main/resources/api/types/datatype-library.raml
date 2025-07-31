@@ -1,6 +1,20 @@
 #%RAML 1.0 Library
 
 types:
+  StudentResponse:
+    type: object
+    properties:
+      id: string
+      name: string
+      email: string
+      admission_percentage: number
+      address: string
+      current_section: string
+      cumulated_score: integer
+      days_left: integer
+      report_file_path?: string  # Optional field
+      created_date: string
+
   Student:
     type: object
     properties:
@@ -14,7 +28,7 @@ types:
       admissionPercentage:
         type: number
         required: true
-        minimum: 0
+        minimum: 40
         maximum: 100
 
   ScoreInput:

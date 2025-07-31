@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<sub-flow name="update-sudent-marks-sub-flow" doc:id="aeb26f19-3836-4d6c-8174-cd82a4f83f9e" >
+		<set-variable value="#[payload]" doc:name="set marks variable" doc:id="f072af0e-a90f-40a0-af13-003d5efac670" variableName="marks"/>
+		<flow-ref doc:name="fetch student details" doc:id="8d67a426-1579-40d0-bff9-78328efc30f3" name="fetch-student-details-sub-flow"/>
+		<flow-ref doc:name="validate marks" doc:id="92bcf243-bf1b-4458-9fe5-a6dc53bc1163" name="validate-marks-payload-sub-flow" />
+		<choice doc:name="Choice" doc:id="cf0599da-1e06-4b5a-8086-08c136f417c9" >
+			<when expression="#[vars.httpStatus == 200]">
+				<until-successful maxRetries="3" doc:name="Until Successful" doc:id="adb2c04c-1edb-4169-944b-591e8fbeb464" millisBetweenRetries="3000">
+					<try doc:name="Try" doc:id="190ca99b-58fe-46ae-98b5-adadfb9e3b2e" transactionalAction="ALWAYS_BEGIN">
+					<ee:transform doc:name="Transform Message" doc:id="2b49e2b6-fd18-409d-bca0-840fe418f34a">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var Total_marks = (vars.marks."subject-1"as Number)
+					 +(vars.marks."subject-2" as Number)+(vars.marks."subject-3" as Number)
+					 
+
+var weightage ={
+	"A": 1,
+	"B":0.8,
+	"C":0.6,
+	"D":0.4,
+	"E":0.2
+}
+var weighted_marks = Total_marks*(weightage[payload.current_section])
+---
+{
+	id:payload.id,
+	section:payload.current_section,
+	day_of_course:vars.day,
+	subject_1:vars.marks."subject-1",
+	subject_2:vars.marks."subject-2",
+	subject_3:vars.marks."subject-3",
+	days_total_marks:Total_marks,
+	weighted_score:weighted_marks,
+	cummulative_score:weighted_marks + payload.cumulated_score
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+					<set-variable value="#[payload]" doc:name="set student variable" doc:id="87cf1304-0d4f-497c-9dc7-d1658e69091f" variableName="student" />
+						<logger level="INFO" doc:name="Logger" doc:id="89bf71b3-056c-425b-9032-8239a0dc2b63" message="#[payload]" />
+					<db:insert doc:name="Insert" doc:id="9067bfa5-e0dd-4771-bebf-83781ee59f00" config-ref="Database_Config">
+					<db:sql><![CDATA[INSERT INTO mark_records (
+    id,
+    section,
+    day_of_course,
+    subject_1,
+    subject_2,
+    subject_3,
+    days_total_marks,
+    weighted_score
+) VALUES (
+    :id,
+    :section,
+    :day_of_course,
+    :subject_1,
+    :subject_2,
+    :subject_3,
+    :days_total_marks,
+    :weighted_score
+);
+]]></db:sql>
+					<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+				</db:insert>
+					<ee:transform doc:name="Transform Message" doc:id="0912fa2a-4350-45b6-9c43-c9c5295f51c7">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	studentId:vars.student.id,
+	"subject-1":vars.marks."subject-1",
+	"subject-2":vars.marks."subject-2",
+	"subject-3":vars.marks."subject-3",
+	days_total_marks:vars.student.days_total_marks,
+	weighted_score:vars.student.weighted_score,
+	cummulative_score:vars.student.cummulative_score
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+					<error-handler>
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0edb25ed-b3e9-469e-8252-a0cd94f82ba0" type="DB:QUERY_EXECUTION">
+							<ee:transform doc:name="Transform Message" doc:id="fff292d2-0e03-4e06-9ef2-b44b5b20825e">
+								<ee:message>
+									<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  errorType: error.errorType.identifier,
+  message_from_system:error.description,
+  message:"Duplicate record found."
+}]]></ee:set-payload>
+								</ee:message>
+									<ee:variables >
+										<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+									</ee:variables>
+							</ee:transform>
+						</on-error-continue>
+					</error-handler>
+				</try>
+				</until-successful>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="f8b96dfa-9e31-4b15-a387-50e9a8d828b7" message="#[payload]"/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="validate-marks-payload-sub-flow" doc:id="eb903f3e-237f-4d50-9123-7fcd0b8a1d9c" >
+		<logger level="INFO" doc:name="Logger" doc:id="b37d4d6d-9e89-40d2-85de-f40fb1b4afe7" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="7a5f5814-c1bd-4ab3-9860-65996a5779a0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var section_marks = {
+	"A":1500,
+	"B":1200,
+	"C":900,
+	"D":600,
+	"E":300
+}
+var dayserror = if(6 - payload.days_left as Number == vars.day as Number) false else true
+var marks = vars.marks
+var subject_limt = section_marks[payload.current_section]/3
+var result =	(if(marks."subject-1">subject_limt)
+						" subject-1 " else "")
+						++ (if(marks."subject-2">subject_limt)
+							" subject-2 " else "")++ (if(marks."subject-3">subject_limt)
+								" subject-3 "  else "")
+---
+if(dayserror and payload.days_left as Number != 0)
+{
+	status : false,
+	correlationId:vars.correlationId,
+	message : "Please update day "++(6 - payload.days_left as Number)++" marks."
+}	
+else if(result=="")
+	payload ++{status :true}
+else
+{
+	status : false,
+	message : "Each subject limit is " ++(subject_limt)++"."++(result) ++" exceded the limit."
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="bebe8583-ba5f-4f6d-8fb7-a0a29fe6f4a0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpStatus" ><![CDATA[if(payload.status==true) 200 else 400]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+</mule>

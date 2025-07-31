@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get:\student\(ID)\get-score:api-config" doc:id="0e24209a-d0bf-43ed-8cee-1d91cde74b17" >
+		<ee:transform doc:name="Transform Message" doc:id="2c30a5ec-e8b4-4880-af64-2550471fb155" >
+			<ee:variables >
+				<ee:set-variable variableName="ID" ><![CDATA[attributes.uriParams.'ID']]></ee:set-variable>
+				<ee:set-variable variableName="day" ><![CDATA[attributes.queryParams.day]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="c924231c-abc4-49fa-a1bc-79c2647f5042" name="fetch-student-marks-by-id-and-day-sub-flow"/>
+		<ee:transform doc:name="Transform Message1" doc:id="7b0869c8-c147-4659-aead-1751e1712e99" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="create-student-in-database-sub-flow" doc:id="b8fdf1e0-96fe-4833-ad02-67bdbeeec985" >
+		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="ad5cce9b-e3f7-4138-b9b4-023646091bf3" millisBetweenRetries="5000">
+			<try doc:name="Try" doc:id="a90a9597-0bc0-443c-8037-399aaafcb840">
+			<db:insert doc:name="Insert" doc:id="70fe3ee3-83a7-4dc6-b063-e14751ea1953" config-ref="Database_Config" target="result" autoGenerateKeys="true">
+			<db:sql><![CDATA[INSERT INTO students (
+		  id,
+		  name,
+		  email,
+		  admission_percentage,
+		  address,
+		  current_section,
+		  cumulated_score,
+		  days_left,
+		  report_file_path,
+		  created_date
+		) VALUES (
+		  :id,
+		  :name,
+		  :email,
+		  :admission_percentage,
+		  :address,
+		  :current_section,
+		  :cumulated_score,
+		  :days_left,
+		  :report_file_path,
+		  :created_date
+);]]></db:sql>
+			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+			<ee:transform doc:name="Transform Message" doc:id="f6d03dd3-ac59-4469-9854-2a0a45bad9e9">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message :"Student record with ID: "++(payload.id as String)++" created in the database."
+
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<error-handler>
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3fcf4b31-c835-4780-80a0-c3e1075303c4" type="DB:CONNECTIVITY">
+						<logger level="WARN" doc:name="Logger" doc:id="98fa71c5-2ebe-4048-8918-5d24ea893733" message='#["Connecting issue to Database ...Retrying...."]'/>
+					</on-error-propagate>
+			</error-handler>
+		</try>
+		</until-successful>
+		<logger level="INFO" doc:name="Logger" doc:id="93f53a07-fe59-4fab-a4c1-03a367043bfa" message='#[payload]' />
+	</sub-flow>
+</mule>

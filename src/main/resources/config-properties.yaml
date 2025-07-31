@@ -5,8 +5,20 @@ environment-client:
   secret: "![BayyMw0gspJyntcHVBObiINP9kKXj7UrTv/W8/oBq5zXVTp3DU8jzQ==]"
 
 database:
-  username: "![fG2AIjSIDMQ=]"
-  password: "![WfZRmAxg8DY=]"
-  databaseName: "dummy"
-  host: "localhost"
+  username: "sql12792970"
+  password: "TZ5xuCv6dq"
+  databaseName: "sql12792970"
+  host: "sql12.freesqldatabase.com"
   port: "3306"
+
+#database:
+#  username: "root"
+#  password: "1234"
+#  databaseName: "school"
+#  host: "localhost"
+#  port: "3306"
+
+#salesforce:
+#  username: raghavaraghava159-zhpj@force.com
+#  password: "![WzdpnuCE9RN0uWV9vo+RUQ==]"
+#  token: "![lchPml9fpPJJjWJCp9cFBnK3Z8aLt6FiDnZ9RbOgw90=]"

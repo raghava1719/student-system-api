@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="patch:\student\(ID):application\json:api-config" doc:id="3e674a29-b580-4d7e-bb4c-aab18b343d68" >
+		<ee:transform doc:name="Transform Message" doc:id="6fb0247a-51b2-4ff0-8122-fde81ce59103" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="ID" ><![CDATA[attributes.uriParams.ID]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="check if student exist" doc:id="e8fc3313-fe3f-4a56-8b34-44673e1b69a1" name="fetch-student-details-sub-flow" target="temp"/>
+		<logger level="INFO" doc:name="Logger" doc:id="21dfbe4d-37ba-49b6-a071-196972ca0a08" message="#[vars.temp.errorCode]"/>
+		<validation:is-true doc:name="Is true" doc:id="9d16125b-5a12-4a27-9060-a3f2a1289dd1" expression="#[vars.temp.errorCode != 404]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="80f5df0c-d5e3-4028-a332-a94376c49ece" message="#[vars.temp]"/>
+		<ee:transform doc:name="Transform Message" doc:id="1f8afd14-c020-476b-a3ce-2fcedb9b1466" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+var id = attributes.uriParams.'ID'
+var updates = 
+  (if (payload.current_section?) "current_section = '" ++ payload.current_section ++ "'" else "") ++
+  (if (payload.cumulated_score?) (if (payload.current_section?) ", " else "") ++ "cumulated_score = " ++ payload.cumulated_score as String else "") ++
+  (if (payload.report_file_path?) (if (payload.current_section? or payload.cumulated_score?) ", " else "") ++ "report_file_path = '" ++ payload.report_file_path ++ "'" else "") ++
+  (if (payload.days_left?) (if (payload.current_section? or payload.cumulated_score? or payload.report_file_path?) ", " else "") ++ "days_left = " ++ payload.days_left as String else "")
+---
+
+"UPDATE students SET " ++ updates ++ " WHERE id = :studentId;"
+]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="ID" ><![CDATA[attributes.uriParams.'ID']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="b9814c1f-edde-4c04-b6b3-4daf6cd382e7" name="conditional-student-update-sub-flow"/>
+		<ee:transform doc:name="Transform Message1" doc:id="a850cbf5-fedd-407d-93ad-ad1ec53a66da" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Student updated successfully",
+  payload:payload
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="098cc111-3893-48f8-8d3f-f5ebbd740b80" type="VALIDATION:INVALID_BOOLEAN">
+				<ee:transform doc:name="Transform Message" doc:id="273a888d-0d82-4537-ad97-fd6ff58ad8c0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.temp]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
