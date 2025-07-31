@@ -22,7 +22,4 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="306a3e5b-f807-4bb1-a7bd-312a700c8e6b" >
 		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.username}" password="${database.password}" database="${database.databaseName}" />
 	</db:config>
-	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="1e8645f1-f1e0-4506-8d33-a03d74125669" >
-		<salesforce:basic-connection username="${salesforce.username}" password="${secure::salesforce.password}" securityToken="${secure::salesforce.token}"/>
-	</salesforce:sfdc-config>
 </mule>
