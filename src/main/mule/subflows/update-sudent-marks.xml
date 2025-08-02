@@ -67,7 +67,7 @@ var weighted_marks = Total_marks*(weightage[payload.current_section])
     :subject_2,
     :subject_3,
     :days_total_marks,
-    :weighted_score
+    :weighted_score,
     :created_date
 );
 ]]></db:sql>
