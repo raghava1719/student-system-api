@@ -4,7 +4,7 @@
 
 	<groupId>8b81c0fb-b4b0-4dc3-ab37-efab51816ea1</groupId>
 	<artifactId>student-managment-runtime</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.1</version>
 	<packaging>mule-application</packaging>
 
 	<name>student-managment</name>
