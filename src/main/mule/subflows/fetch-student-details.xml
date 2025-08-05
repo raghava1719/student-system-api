@@ -18,20 +18,21 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
 ---
 if(isEmpty(payload))
 	{
-		errorCode:404,
-		message:"Student with ID:"++(vars.ID default "")++" not found"
+		message:"Student with ID:"++(vars.ID default "")++" not found",
+		statusCode: 404,
+         
+            correlationId: correlationId,
+            timestamp: timestamp
+		
 	}
 	else
 		payload[0]]]></ee:set-payload>
 					</ee:message>
 					<ee:variables >
-						<ee:set-variable variableName="httpStatus" ><![CDATA[if(isEmpty(payload))
-	404
-else
-	200]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
 				<error-handler>
@@ -40,12 +41,16 @@ else
 							<ee:message >
 								<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
 ---
 {
-  errorType: error.errorType.identifier,
-  message_from_system:error.description
+	"statusCode":500,
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
 }
-]]></ee:set-payload>
+ ]]></ee:set-payload>
 							</ee:message>
 							<ee:variables >
 								<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
@@ -54,6 +59,22 @@ output application/json
 					</on-error-continue>
 					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dbb13729-9875-4efd-8bad-6cfaddea02fc" type="DB:CONNECTIVITY">
 						<logger level="WARN" doc:name="Logger" doc:id="ddd7f62b-e5f7-47bb-99ce-86fd72fcf544" message='#["Connecting issue to Database ...Retrying...."]' />
+						<ee:transform doc:name="Transform Message" doc:id="cd4c0526-16bb-4df8-a459-e03f4f13a571" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
+---
+{
+	"statusCode":500,
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}
+ ]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
 					</on-error-propagate>
 				</error-handler>
 			</try>

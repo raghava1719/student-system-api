@@ -97,9 +97,9 @@ output application/json
 output application/json
 ---
 {
+	statusCode : 400,
   errorType: error.errorType.identifier,
   message_from_system:error.description,
-  message:"Duplicate record found."
 }]]></ee:set-payload>
 								</ee:message>
 									<ee:variables >
@@ -107,6 +107,23 @@ output application/json
 									</ee:variables>
 							</ee:transform>
 						</on-error-continue>
+							<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b61c8b30-8008-4ae9-88a0-475127ab0d88" type="ANY">
+								<ee:transform doc:name="Transform Message" doc:id="dd4b328f-8537-42a9-b452-8ffa864dffe4" >
+									<ee:message >
+										<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode : 500,
+  errorType: error.errorType.identifier,
+  message_from_system:error.description,
+}]]></ee:set-payload>
+									</ee:message>
+									<ee:variables >
+										<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+									</ee:variables>
+								</ee:transform>
+							</on-error-continue>
 					</error-handler>
 				</try>
 				</until-successful>

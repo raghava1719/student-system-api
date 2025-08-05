@@ -24,8 +24,39 @@ uses:
                 "studentId": "0031X00000abcdeQAD",
                 "message": "Student registered successfully"
               }
-      
 
+/students/marks/new:
+  get:
+    description: Get all student marks records newly inserted since a given timestamp
+    queryParameters:
+      since:
+        type: datetime
+        required: true
+        example: 2025-08-02T00:00:00Z
+    responses:
+      200:
+        body:
+          application/json:
+           example: !include examples/students-response.json
+           
+/students/pending-report:
+  get:
+    description: Retrieve students whose 5-day course is complete but report card is not yet generated.
+    responses:
+      200:
+        body:
+          application/json:
+            example: [
+              {
+                "id": "STU12345",
+                "name": "John Doe",
+                "email": "john@example.com",
+                "days_left": 0,
+                "report_file_path": null
+              }
+            ]
+
+    
 /student/{ID}:
   get:
     is: [traits.errorHandling]
