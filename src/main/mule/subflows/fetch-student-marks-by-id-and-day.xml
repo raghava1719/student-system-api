@@ -18,34 +18,53 @@ var id = vars.ID
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<until-successful maxRetries="3" doc:name="Until Successful" doc:id="e3f39508-c663-44ab-99e3-decec2459ae0" >
-			<try doc:name="Try" doc:id="bdb0ce37-21d4-4a41-b197-ed5399d42904" >
+		<try doc:name="Try" doc:id="bdb0ce37-21d4-4a41-b197-ed5399d42904">
 				<db:select doc:name="Select" doc:id="f52093c2-09c3-4e12-b57a-35a414fae086" config-ref="Database_Config">
 			<db:sql><![CDATA[#[payload.query]]]></db:sql>
 		</db:select>
-				<error-handler >
+				<error-handler>
 					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d8b6df7f-d745-4513-bd45-b5337d755b7e" type="DB:CONNECTIVITY">
-						<logger level="INFO" doc:name="Logger" doc:id="6cfd62dd-6ba2-4880-bf32-e15dec3065ba" message='#["Connecting issue to Database ...Retrying...."]'/>
-					</on-error-propagate>
-					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2beda58c-e989-4355-ac98-d297afced224" type="DB:BAD_SQL_SYNTAX, DB:QUERY_EXECUTION, DB:RETRY_EXHAUSTED, EXPRESSION, STREAM_MAXIMUM_SIZE_EXCEEDED">
-						<ee:transform doc:name="Transform Message" doc:id="4ee4aeef-e2bf-42df-aa45-c17b332f702b" >
-							<ee:message >
-								<ee:set-payload ><![CDATA[%dw 2.0
+						<logger level="INFO" doc:name="Logger" doc:id="6cfd62dd-6ba2-4880-bf32-e15dec3065ba" message='#["Connecting issue to Database ...Retrying...."]' />
+					<ee:transform doc:name="Transform Message" doc:id="3a0a8dc6-685e-48c8-a0ad-61f41bc7bd37" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
 ---
 {
-  errorType: error.errorType.identifier,
-  message_from_system:error.description
-}]]></ee:set-payload>
+	"statusCode":500,
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}
+ ]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					</on-error-propagate>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2beda58c-e989-4355-ac98-d297afced224" type="DB:BAD_SQL_SYNTAX, DB:QUERY_EXECUTION, DB:RETRY_EXHAUSTED, EXPRESSION, STREAM_MAXIMUM_SIZE_EXCEEDED">
+						<ee:transform doc:name="Transform Message" doc:id="4ee4aeef-e2bf-42df-aa45-c17b332f702b">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
+---
+{
+	"statusCode":500,
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}
+ ]]></ee:set-payload>
 							</ee:message>
-							<ee:variables >
-								<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+							<ee:variables>
+								<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
 							</ee:variables>
 						</ee:transform>
 					</on-error-continue>
 				</error-handler>
 			</try>
-		</until-successful>
 		<ee:transform doc:name="Transform Message" doc:id="d34d0d75-8884-4cb2-aa5f-ab661bac508b" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0

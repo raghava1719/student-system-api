@@ -20,6 +20,6 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
     <apikit:config name="api-config" api="api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="306a3e5b-f807-4bb1-a7bd-312a700c8e6b" >
-		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.username}" password="${database.password}" database="${database.databaseName}" />
+		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.username}" password="${database.password}" database="${database.databasename}" />
 	</db:config>
 </mule>
