@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="delete:\student\(ID):api-config" doc:id="82a336a9-151b-4788-9962-4d7ecf1c6c8d" >
+		<db:delete doc:name="Delete" doc:id="df50d967-e292-466c-a41b-d9a92b53d6a3" config-ref="Database_Config">
+					<reconnect />
+			<db:sql><![CDATA[DELETE FROM students WHERE id= :id]]></db:sql>
+					<db:input-parameters><![CDATA[#[{
+	id:attributes.uriParams.ID
+}]]]></db:input-parameters>
+				</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="b6424431-7482-4f82-ad26-15a3e6ad09b7">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+if(payload == 0)
+	{
+    "statusCode": 404,
+    "message": "Student with ID:"++(vars.id default "404")++" not found."
+	}
+else
+{
+	"statusCode":200,
+	"message": "Student with ID:"++(vars.id default "")++"deleted successful."
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus"><![CDATA[if(payload==0) 404 else 200]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a45eeac8-9c1d-4585-84aa-c07c88e1d8c9" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY" >
+				<ee:transform doc:name="Transform Message" doc:id="c3b29ec0-9072-43b6-9b7a-05a198f46695">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	statusCode:500,
+  errorType: error.errorType.identifier,
+  message_from_system:error.description,
+  message: "Student with ID already exists. Please use a unique ID."
+}]]></ee:set-payload>
+							</ee:message>
+							<ee:variables>
+								<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="5edd1369-421b-497e-82bd-aff1b14d7ec5" type="DB:QUERY_EXECUTION">
+				<ee:transform doc:name="Transform Message" doc:id="369ffa52-74d8-40c0-91ba-6898bee42bda">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode:400,
+  errorType: error.errorType.identifier,
+  message_from_system:error.description
+}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables />
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

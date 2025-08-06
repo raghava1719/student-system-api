@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="get:\students:api-config" doc:id="0e24209a-d0bf-43ed-8cee-1d91cde74b17" >
+		<ee:transform doc:name="set queryParms as variables" doc:id="fb645303-933c-4400-9ce2-099808da727e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="id" ><![CDATA[attributes.queryParams.id default null]]></ee:set-variable>
+				<ee:set-variable variableName="reportFilepPath" ><![CDATA[attributes.queryParams.report_file_path default null]]></ee:set-variable>
+				<ee:set-variable variableName="daysLeft" ><![CDATA[attributes.queryParams.days_left default null]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="fetch-students-details" doc:id="505bf3ad-bae3-4274-8808-0ea1de40767e" name="fetch-students-details"/>
+	</flow>
+	<sub-flow name="fetch-students-details" doc:id="80c01a45-6a87-4820-a7e2-7c28fa201eda">
+		<try doc:name="Try" doc:id="d2409992-b934-426c-b4ea-5fab66d7f9ca">
+			<ee:transform doc:name="create query based on queryParams" doc:id="1e57527d-f5fa-4c98-8018-bcb9d30ae0b8">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output text/plain
+
+// Read query params
+var id = vars.id
+var dayLeft = vars.daysLeft
+var reportFilePath = vars.reportFilepPath
+
+// Build the conditions list
+var conditions =
+    (if (id != null) ["ID = '" ++ vars.id ++"' "] else []) ++
+    (if (dayLeft != null) ["days_left = " ++ vars.daysLeft ++" "] else []) ++
+    (if (reportFilePath != null) ["report_file_path = '" ++ vars.reportFilepPath ++ "' "] else [])
+
+// Final query with or without WHERE clause
+---
+"SELECT * FROM students" ++ 
+(if (conditions != []) " WHERE " ++ (conditions joinBy " AND ") else "")
+]]></ee:set-payload>
+				</ee:message>
+				<ee:variables>
+				</ee:variables>
+			</ee:transform>
+			<db:select doc:name="Select" doc:id="0090eb12-69ca-427a-bf9a-62ebcf78d2ba" config-ref="Database_Config" target="result">
+				<db:sql><![CDATA[#[payload]]]></db:sql>
+				<db:input-parameters><![CDATA[#[vars]]]></db:input-parameters>
+			</db:select>
+			<ee:transform doc:name="Transform Message" doc:id="760b06cd-502f-4cfd-b8cf-4bfdc3ccd189">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+if (vars.id != null)
+  if (!isEmpty(vars.result) )
+    vars.result[0]
+  else
+    { statusCode:404, message: "Student not found" }
+else
+  if (!isEmpty(vars.result))
+    vars.result
+  else
+    {statusCode:404, message: "students not found" }]]></ee:set-payload>
+				</ee:message>
+				<ee:variables />
+			</ee:transform>
+			<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e6d8ae27-3c95-4a9b-8cf6-1e9d2ca2a15f" type="DB:QUERY_EXECUTION">
+						<ee:transform doc:name="Transform Message" doc:id="6491fcaa-4b6a-415e-9722-5d5549219d51">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
+---
+{
+	"statusCode":500,
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}
+ ]]></ee:set-payload>
+							</ee:message>
+							<ee:variables>
+								<ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+					</on-error-continue>
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6bd83902-3103-42bd-ab4d-337ccef65035" type="DB:CONNECTIVITY">
+						<logger level="WARN" doc:name="Logger" doc:id="2352650f-a054-43de-b72e-022bd977b550" message='#["Connecting issue to Database ...Retrying...."]' />
+						<ee:transform doc:name="Transform Message" doc:id="d253ec4f-50a7-495e-ae2e-a1bc3a5d169d">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
+---
+{
+	"statusCode":500,
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}
+ ]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+					</on-error-propagate>
+				</error-handler>
+			</try>
+	</sub-flow>
+</mule>

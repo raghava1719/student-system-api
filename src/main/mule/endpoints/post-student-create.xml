@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="post:\student\create:application\json:api-config" doc:id="12ae1412-f665-479e-975d-7edadea1c9d6" >
+		<logger level="INFO" doc:name="Logger" doc:id="a7602f18-805a-4ea4-bef2-e0b1a97bdaef" message='#[correlationId ++ "request received to create student in database."]'/>
+		<db:insert doc:name="Insert" doc:id="7c4dcf57-fb78-4025-869a-c9829ad5d8af" config-ref="Database_Config" autoGenerateKeys="true" target="result">
+					<reconnect />
+			<db:sql><![CDATA[INSERT INTO students (
+		  id,
+		  name,
+		  email,
+		  admission_percentage,
+		  address,
+		  current_section,
+		  cumulated_score,
+		  days_left,
+		  report_file_path,
+		  created_date
+		) VALUES (
+		  :id,
+		  :name,
+		  :email,
+		  :admission_percentage,
+		  :address,
+		  :current_section,
+		  :cumulated_score,
+		  :days_left,
+		  :report_file_path,
+		  :created_date
+);]]></db:sql>
+					<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+				</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="1b200afd-f4b7-4a40-973d-a23abc893376">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message :"Student record with ID: "++(payload.id as String)++" created in the database."
+
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0e46bf4c-00c6-4296-993c-e45b8c369e95" type="DB:QUERY_EXECUTION">
+				<ee:transform doc:name="Transform Message" doc:id="a2b6d73e-eada-4693-92e8-8ac21ad826fb" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
+---
+{
+	statusCode:400,
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}
+ ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f8098e97-82fb-41ce-84b0-0b751077a44a" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="b1843694-bdcb-4308-a13c-f7b23abb21db" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
+---
+{
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}
+ ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

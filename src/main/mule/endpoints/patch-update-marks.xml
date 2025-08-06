@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<sub-flow name="validate-marks" doc:id="266ea2fc-f8c8-4e33-8d52-7eac03694fc6" >
+		<ee:transform doc:name="Transform Message" doc:id="fa10b7a9-ed0f-4e3d-aee9-d15d920429cb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var section_marks = {
+	"A":1500,
+	"B":1200,
+	"C":900,
+	"D":600,
+	"E":300
+}
+var marks = payload
+var subject_limt = section_marks[vars.student.current_section]/3
+var result =	(if(marks."subject-1">subject_limt)
+						" subject-1 " else "")
+						++ (if(marks."subject-2">subject_limt)
+							" subject-2 " else "")++ (if(marks."subject-3">subject_limt)
+								" subject-3 "  else "")
+---
+if(result=="")
+	payload ++{status :true}
+else
+{
+	status : false,
+	message : "Each subject limit is " ++(subject_limt)++"."++(result) ++" exceeded the limit."
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<flow name="patch:\student\(ID)\update-score\(day):application\json:api-config" doc:id="2d8ebbca-76f6-42e2-8798-fcd280d2b05f" >
+		<ee:transform doc:name="Transform Message" doc:id="66148409-3678-4dda-b0df-ceb873eb5f25" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="id" ><![CDATA[attributes.uriParams.ID]]></ee:set-variable>
+				<ee:set-variable variableName="day" ><![CDATA[attributes.uriParams.day as Number]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="fetch student details" doc:id="10701191-ca0b-45bd-9702-3d12da7454e2" name="fetch-students-details" target="student"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2099e069-4756-48ae-81f3-74432a27d789" message="#[vars.student]"/>
+		<validation:is-true doc:name="Is true" doc:id="a230d569-45e1-4c9c-94b3-033e0093b0ba" config-ref="Validation_Config" expression="#[vars.student.statusCode != 404]" message="#[vars.student.message]"/>
+		<validation:is-true doc:name="day validation status" doc:id="334eba7b-2a04-4369-9f53-2032ad562405" config-ref="Validation_Config" expression="#[(vars.day == 6 - vars.student.days_left) ]" message='#["Invalid day in uriParam."]'/>
+		<flow-ref doc:name="validate marks" doc:id="361e066a-85fd-4841-aefd-ae5191d40a76" name="validate-marks"/>
+		<validation:is-true doc:name="marks validation status" doc:id="9e313886-26f3-49c4-b15e-e9e46efb94ae" config-ref="Validation_Config" expression="#[payload.status]" message="#[payload.message]"/>
+		<db:update doc:name="Update" doc:id="e8a4ea0b-baa3-476b-8dcf-7e37253c4d1a" config-ref="Database_Config" target="result">
+			<db:sql ><![CDATA[
+UPDATE mark_records
+      SET subject_1 = :subject1,
+          subject_2 = :subject2,
+          subject_3 = :subject3,
+          days_total_marks = :days_total_marks,
+          weighted_score = :weighted_score
+          
+      WHERE id = :id AND day_of_course = :day
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	subject1:payload."subject-1",
+	subject2:payload."subject-2",
+	subject3:payload."subject-3",
+	id:vars.id,
+	day:vars.day,
+	days_total_marks:payload.days_total_marks default 0,
+	weighted_score:payload.weighted_score default 0
+}]]]></db:input-parameters>
+		</db:update>
+		<validation:is-true doc:name="Is true" doc:id="127379e4-312c-4282-af42-59f7b5073cf1" config-ref="Validation_Config" expression="#[vars.result.affectedRows==1]" message='"Empty record not created."'/>
+		<ee:transform doc:name="Transform Message" doc:id="f229dabf-5f0b-435c-898d-6f39d6b223ba" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"Marks updated successful."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="46e772db-df4e-4104-b4b6-0f6a9202cf48" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION, DB:RETRY_EXHAUSTED">
+				<ee:transform doc:name="Transform Message" doc:id="96c63e3a-43b9-4461-bb35-32243dd0cec6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
+---
+{
+	statusCode:500,
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c289f3b9-11cb-42fd-b498-717b6db7ca34" type="VALIDATION:INVALID_BOOLEAN" >
+				<ee:transform doc:name="Transform Message" doc:id="a76cb1d7-d127-46e9-a489-a0197deda856" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
+---
+{
+	statusCode:400,
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 	<flow name="get:\students\marks\new:api-config" doc:id="flow-id">
     
     <!-- DB Query -->
-    <db:select doc:name="Select New Marks" config-ref="Database_Config">
+    <db:select doc:name="Select New Marks" config-ref="Database_Config" target="students">
         <db:sql><![CDATA[
             SELECT * FROM mark_records WHERE created_date >= :since
         ]]></db:sql>
@@ -20,12 +20,20 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
     <!-- Transform Output -->
     <ee:transform doc:name="Transform to JSON">
         <ee:message>
-            <ee:set-payload><![CDATA[
-%dw 2.0
+            <ee:set-payload><![CDATA[%dw 2.0
 output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
 ---
-payload
-]]></ee:set-payload>
+if(isEmpty(vars.students))
+	{
+		message:"No new students with joining date greater than "++ attributes.queryParams.since,
+		statusCode: 404,
+        correlationId: correlationId,
+        timestamp: timestamp
+		
+	}
+	else
+		vars.students]]></ee:set-payload>
         </ee:message>
     </ee:transform>
 
@@ -45,6 +53,7 @@ output application/json
 var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
 ---
 {
+	"statusCode": 400,
   "error": error.errorType.identifier,
   "errorMessage": error.description,
   "correlationId": correlationId,
