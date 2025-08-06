@@ -379,4 +379,5 @@ type auto_266ea2fc_f8c8_4e33_8d52_7eac03694fc6_Output_Variables_day = Any
     </types:processor-declaration>
   </types:enrichment>
   <types:enrichment select="#1e57527d-f5fa-4c98-8018-bcb9d30ae0b8"/>
+  <types:enrichment select="#d34d0d75-8884-4cb2-aa5f-ab661bac508b"/>
 </types:mule>
