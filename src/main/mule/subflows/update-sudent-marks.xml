@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 	<sub-flow name="update-sudent-marks-sub-flow" doc:id="aeb26f19-3836-4d6c-8174-cd82a4f83f9e" >
 		<set-variable value="#[payload]" doc:name="set marks variable" doc:id="f072af0e-a90f-40a0-af13-003d5efac670" variableName="marks"/>
-		<flow-ref doc:name="fetch student details" doc:id="8d67a426-1579-40d0-bff9-78328efc30f3" name="fetch-student-details-sub-flow"/>
+		<flow-ref doc:name="fetch student details" doc:id="8d67a426-1579-40d0-bff9-78328efc30f3" name="fetch-students-details"/>
 		<flow-ref doc:name="validate marks" doc:id="92bcf243-bf1b-4458-9fe5-a6dc53bc1163" name="validate-marks-payload-sub-flow" />
 		<choice doc:name="Choice" doc:id="cf0599da-1e06-4b5a-8086-08c136f417c9" >
 			<when expression="#[vars.httpStatus == 200]">

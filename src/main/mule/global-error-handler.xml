@@ -29,7 +29,6 @@ else
 					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
 				</ee:variables>
 			</ee:transform>
-			<logger level="ERROR" doc:name="Logger" doc:id="8a73eeaf-5b08-4b71-b1a6-7207677e1680" message="#[payload]" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="90d9dded-1b37-44e0-8a1b-661a05854105" type="APIKIT:NOT_FOUND" >
 			<ee:transform doc:name="Transform Message" doc:id="c4c54d6c-b50b-4944-a2d1-606f61eb8457" >

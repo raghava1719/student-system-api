@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_80c01a45_6a87_4820_a7e2_7c28fa201eda_Input_Variables_id = Any
+

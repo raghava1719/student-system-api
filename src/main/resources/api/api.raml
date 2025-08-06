@@ -57,17 +57,34 @@ uses:
             ]
 
     
-/student/{ID}:
+/students:
   get:
     is: [traits.errorHandling]
-    description: get student details from salesforce ID.
+    description: |
+      - Get student details from Database.
+      - If `id` is provided, return specific student.
+      - If `day_left` is provided, filter by remaining days.
+      - If `report_file_path` is provided, filter by that.
+    queryParameters:
+      id:
+        type: string
+        required: false
+        description: Fetch a specific student by ID
+      days_left:
+        type: integer
+        required: false
+        description: Filter students based on days left
+      report_file_path:
+        type: string
+        required: false
+        description: Filter students with matching report file path
     responses:
       200:
         body:
           application/json:
-            type: types.StudentResponse
+            type: types.StudentResponse[]
             example: !include examples/student-response-example.json
-          
+
   patch:
     is: [traits.errorHandling]
     description: Update student section, accumulated score or file path.
@@ -96,23 +113,13 @@ uses:
                 "message": "Student deleted successfully"
               }
 
-/student/{ID}/update-score/{day}:
-  uriParameters:
-    ID:
-      type: string
-      required: true
-    day:
-      type: integer
-      required: true
-      minimum: 1
-      maximum: 5
+/students/empty-record:
   post:
     is: [traits.errorHandling]
-    description: Update student score for a given day.
+    description: insert empty record.
     body:
       application/json:
-        type: types.ScoreInput
-        example: !include examples/score-input-example.json
+        example: !include examples/students-response.json
     responses:
       200:
         body:
@@ -155,3 +162,29 @@ uses:
               {
                 "message": "Record created"
               }
+              
+/student/{ID}/update-score/{day}:
+  uriParameters:
+    ID:
+      type: string
+      required: true
+    day:
+      type: integer
+      required: true
+      minimum: 1
+      maximum: 5
+  patch:
+    is: [traits.errorHandling]
+    description: Update student score for a given day.
+    body:
+      application/json:
+        type: types.ScoreInput
+        example: !include examples/score-input-example.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "message": "Score updated" 
+                }

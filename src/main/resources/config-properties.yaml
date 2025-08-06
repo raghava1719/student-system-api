@@ -4,19 +4,19 @@ environment-client:
   id: "![g4O5YWmcNeD/AglTc9GvXQKqVRLYxbv1s/9QUd3bI8PkejJ3LpS/kQ==]"
   secret: "![BayyMw0gspJyntcHVBObiINP9kKXj7UrTv/W8/oBq5zXVTp3DU8jzQ==]"
 
-database:
-  username: "sql12792970"
-  password: "TZ5xuCv6dq"
-  databasename: "sql12792970"
-  host: "sql12.freesqldatabase.com"
-  port: "3306"
-
 #database:
-#  username: "root"
-#  password: "1234"
-#  databasename: "school"
-#  host: "localhost"
+#  username: "sql12792970"
+#  password: "TZ5xuCv6dq"
+#  databasename: "sql12792970"
+#  host: "sql12.freesqldatabase.com"
 #  port: "3306"
+
+database:
+  username: "root"
+  password: "1234"
+  databasename: "school"
+  host: "localhost"
+  port: "3306"
 
 #salesforce:
 #  username: raghavaraghava159-zhpj@force.com

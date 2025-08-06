@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="post:\students\empty-record:application\json:api-config" doc:id="2d8ebbca-76f6-42e2-8798-fcd280d2b05f" >
+		<set-variable value="#[0]" doc:name="Set failedRecords" doc:id="0ca1748a-aadf-4070-bf7f-a8ae38d7a2ee" variableName="failedRecords"/>
+		<foreach collection="#[payload]" doc:name="Loop Records">
+  <try>
+    <db:insert doc:name="Insert" doc:id="04f8cfab-6c81-4ef3-9903-c8436aa3875e" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO mark_records (
+    id,
+    section,
+    day_of_course,
+    subject_1,
+    subject_2,
+    subject_3,
+    days_total_marks,
+    weighted_score,
+    created_date
+) VALUES (
+    :id,
+    :section,
+    :day_of_course,
+    :subject_1,
+    :subject_2,
+    :subject_3,
+    :days_total_marks,
+    :weighted_score,
+    :created_date
+);
+]]></db:sql>
+			<db:input-parameters><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="054f8229-e7f0-487b-8bee-2f9939acafa6" >
+						<set-variable value="#[vars.failedRecords + 1]" doc:name="Set Variable" doc:id="2f44f536-223c-4e50-a2f4-fba4ec8675e8" variableName="failedRecords"/>
+					</on-error-continue>
+				</error-handler>
+  
+</try>
+</foreach>
+		
+		<ee:transform doc:name="Transform Message" doc:id="41cc000d-380f-4e89-9c1f-38ea5fad722b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if (vars.failedRecords == sizeOf(payload)) {
+	statusCode:400,	
+    message:"All records failed"
+}
+    
+else if (vars.failedRecords == 0) {
+	statusCode:200,
+    message:"All records inserted successfully"
+    }
+else {
+	statusCode:207,
+    message:vars.failedRecords++"//"++ sizeOf(payload) ++ " records inserted."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="46e772db-df4e-4104-b4b6-0f6a9202cf48" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="96c63e3a-43b9-4461-bb35-32243dd0cec6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
+---
+{
+  "error": error.errorType.identifier,
+  "errorMessage": error.description,
+  "correlationId": correlationId,
+  "timestamp": timestamp
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
