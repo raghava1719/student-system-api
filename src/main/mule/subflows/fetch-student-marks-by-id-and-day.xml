@@ -80,12 +80,12 @@ var result =
 ---
 if (isEmpty(payload)) 
   {
-    errorCode: 404,
+    statusCode: 404,
     message: "No records found for student ID: " ++ id as String
   }
 else if (day != null and isEmpty(result)) 
   {
-    errorCode: 404,
+    statusCode: 404,
     message: "No records found for student ID: " ++ id as String ++ " with day = " ++ (day as String)
   }
 else 
@@ -97,17 +97,6 @@ else
 ]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="httpStatus" ><![CDATA[if(isEmpty(payload)
-	or ( vars.day !=null
-		and
-		 isEmpty(
-		 	payload filter(item)->item.day_of_course==vars.day
-		 )
-	)
-)
- 404
-else
- 200]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 	</sub-flow>
