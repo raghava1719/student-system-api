@@ -84,7 +84,11 @@ uses:
           application/json:
             type: types.StudentResponse[]
             example: !include examples/student-response-example.json
-
+/students/{ID}:
+  uriParameters:
+    ID:
+      type: string
+      required: true
   patch:
     is: [traits.errorHandling]
     description: Update student section, accumulated score or file path.
