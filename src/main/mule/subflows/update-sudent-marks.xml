@@ -41,7 +41,7 @@ var weighted_marks = Total_marks*(weightage[payload.current_section])
 	subject_3:vars.marks."subject-3",
 	days_total_marks:Total_marks,
 	weighted_score:weighted_marks,
-	created_date:now() as String {format: "yyyy-MM-dd HH:mm:ss"},
+	created_date: (now() as String {format: "yyyy-MM-dd HH:mm:ss"}),
 	cummulative_score:weighted_marks + payload.cumulated_score
 }]]></ee:set-payload>
 			</ee:message>
