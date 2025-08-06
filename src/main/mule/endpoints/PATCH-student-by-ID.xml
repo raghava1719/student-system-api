@@ -5,7 +5,7 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
-	<flow name="patch:\student\(ID):application\json:api-config" doc:id="3e674a29-b580-4d7e-bb4c-aab18b343d68" >
+	<flow name="patch:\students\(ID):application\json:api-config" doc:id="3e674a29-b580-4d7e-bb4c-aab18b343d68" >
 		<ee:transform doc:name="Transform Message" doc:id="6fb0247a-51b2-4ff0-8122-fde81ce59103" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
