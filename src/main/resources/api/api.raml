@@ -7,56 +7,8 @@ uses:
   types: types/datatype-library.raml
   traits: traits/error-handling.raml
 
-/student/register:
-  post:
-    is: [traits.errorHandling]
-    description: Register a new student in Salesforce.
-    body:
-      application/json:
-        type: types.Student
-        example: !include examples/student-example.json
-    responses:
-      201:
-        body:
-          application/json:
-            example: |
-              {
-                "studentId": "0031X00000abcdeQAD",
-                "message": "Student registered successfully"
-              }
-
-/students/marks/new:
-  get:
-    description: Get all student marks records newly inserted since a given timestamp
-    queryParameters:
-      since:
-        type: datetime
-        required: true
-        example: 2025-08-02T00:00:00Z
-    responses:
-      200:
-        body:
-          application/json:
-           example: !include examples/students-response.json
            
-/students/pending-report:
-  get:
-    description: Retrieve students whose 5-day course is complete but report card is not yet generated.
-    responses:
-      200:
-        body:
-          application/json:
-            example: [
-              {
-                "id": "STU12345",
-                "name": "John Doe",
-                "email": "john@example.com",
-                "days_left": 0,
-                "report_file_path": null
-              }
-            ]
 
-    
 /students:
   get:
     is: [traits.errorHandling]
@@ -84,6 +36,8 @@ uses:
           application/json:
             type: types.StudentResponse[]
             example: !include examples/student-response-example.json
+
+
 /students/{ID}:
   uriParameters:
     ID:
@@ -117,23 +71,6 @@ uses:
                 "message": "Student deleted successfully"
               }
 
-/students/empty-record:
-  post:
-    is: [traits.errorHandling]
-    description: insert empty record.
-    body:
-      application/json:
-        example: !include examples/students-response.json
-    responses:
-      200:
-        body:
-          application/json:
-            example: |
-              {
-                "message": "Score updated" 
-                }
-
-
 /student/{ID}/get-score:
   get:
     is: [traits.errorHandling]
@@ -153,7 +90,7 @@ uses:
 /student/create:
   post:
     is: [traits.errorHandling]
-    description: Create a day 1 record for the student in the database.
+    description: Create a  record for the student in the database.
     body:
       application/json:
         type: types.CreateRecord
