@@ -21,7 +21,9 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
     <apikit:config name="api-config" api="api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="306a3e5b-f807-4bb1-a7bd-312a700c8e6b" >
-		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.username}" password="${database.password}" database="${database.databasename}" />
+		<db:my-sql-connection host="${database.host}" port="${database.port}" user="${database.username}" password="${database.password}" database="${database.databasename}" >
+			<db:pooling-profile minPoolSize="1" maxWait="3000" maxIdleTime="30000" maxStatements="50" />
+		</db:my-sql-connection>
 	</db:config>
 	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="5ea0ca0e-ad39-4703-afda-4bf0e8b4fe98" />
 </mule>

@@ -47,7 +47,6 @@ var weighted_marks = Total_marks*(weightage[payload.current_section])
 			</ee:message>
 		</ee:transform>
 					<set-variable value="#[payload]" doc:name="set student variable" doc:id="87cf1304-0d4f-497c-9dc7-d1658e69091f" variableName="student" />
-						<logger level="INFO" doc:name="Logger" doc:id="89bf71b3-056c-425b-9032-8239a0dc2b63" message="#[payload]" />
 					<db:insert doc:name="Insert" doc:id="9067bfa5-e0dd-4771-bebf-83781ee59f00" config-ref="Database_Config">
 					<db:sql><![CDATA[INSERT INTO mark_records (
     id,
@@ -134,7 +133,6 @@ output application/json
 		</choice>
 	</sub-flow>
 	<sub-flow name="validate-marks-payload-sub-flow" doc:id="eb903f3e-237f-4d50-9123-7fcd0b8a1d9c" >
-		<logger level="INFO" doc:name="Logger" doc:id="b37d4d6d-9e89-40d2-85de-f40fb1b4afe7" message="#[payload]"/>
 		<ee:transform doc:name="Transform Message" doc:id="7a5f5814-c1bd-4ab3-9860-65996a5779a0" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0

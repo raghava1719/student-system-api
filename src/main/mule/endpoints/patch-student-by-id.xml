@@ -19,7 +19,6 @@ payload]]></ee:set-payload>
 		</ee:transform>
 		<flow-ref doc:name="check if student exist" doc:id="e8fc3313-fe3f-4a56-8b34-44673e1b69a1" name="fetch-students-details" target="temp"/>
 		<validation:is-true doc:name="Is true" doc:id="9d16125b-5a12-4a27-9060-a3f2a1289dd1" expression="#[vars.temp.statusCode != 404 ]"/>
-		<logger level="INFO" doc:name="Logger" doc:id="80f5df0c-d5e3-4028-a332-a94376c49ece" message="#[vars.temp]"/>
 		<ee:transform doc:name="Transform Message" doc:id="1f8afd14-c020-476b-a3ce-2fcedb9b1466" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
