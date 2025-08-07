@@ -103,7 +103,23 @@ uses:
               {
                 "message": "Record created"
               }
-              
+         
+/students/empty-record:
+  post:
+    is: [traits.errorHandling]
+    description: insert empty record.
+    body:
+      application/json:
+        example: !include examples/students-response.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "message": "Score updated" 
+                }
+
 /student/{ID}/update-score/{day}:
   uriParameters:
     ID:
