@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="patch-update-marks-test-suite.xml" />
+	<munit:test name="patch-update-marks-test-suite-patch:\student\(ID)\update-score\(day):application\json:api-configTest" doc:id="ebad4ad7-5420-45b3-a4ca-60c3efbd877d" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="da066c5f-3d40-4726-b1c0-02689af186ff" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="10701191-ca0b-45bd-9702-3d12da7454e2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e3a703b2-6269-4412-9b40-64cab9514076" processor="db:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e8a4ea0b-baa3-476b-8dcf-7e37253c4d1a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[{affectedRows:1}]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			
+			<munit:set-event doc:name="Set Event" doc:id="39cc8b50-840f-4971-8079-6405834e8403" >
+				<munit:payload value='#[{  &#10;  "subject-1": 100,&#10;  "subject-2": 100,&#10;  "subject-3": 100&#10;}]' />
+				<munit:attributes value="#[{&#10;	uriParams:{&#10;		day:1&#10;	}&#10;}]" />
+			</munit:set-event>
+			<set-variable value='#[{ &#10;    "id": "a01dN00000eAC0tQAG",&#10;    "name": "Ramesh",&#10;    "email": "ramesh@example.com",&#10;    "admission_percentage": 65,&#10;    "address": "DLF",&#10;    "current_section": "A",&#10;    "cumulated_score": 0,&#10;    "days_left": 5,&#10;    "total_score": 7500,&#10;    "report_file_path": "-",&#10;    "created_date": "2025-08-08T09:42:22"&#10;}]' doc:name="Set Variable" doc:id="528f19e3-e6e5-47ad-900f-91dea5f94dd7" variableName="student"/>
+			<set-variable value="#[{affectedRows:1}]" doc:name="Set Variable" doc:id="2c6ffa28-8300-455b-8fa5-076e6c282455" variableName="result" />
+			<flow-ref doc:name="Flow-ref to patch:\student\(ID)\update-score\(day):application\json:api-config" doc:id="1efa71ce-e46d-447b-aa9a-c4e4d2d70ab2" name="patch:\student\(ID)\update-score\(day):application\json:api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="a7be4ffa-ef39-458b-adc5-a4bb2f8ddb13" actual="#[payload]" expected='#[{&#10;	message:"Marks updated successful."&#10;}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="patch-update-marks-test-suite-patch:\student\(ID)\update-score\(day):application\json:api-configTest1" doc:id="a5bf9d08-4dd9-46ed-a09a-c1b220ee02e9" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="be80b6e3-8335-4f3c-bd7e-7fbe7dbb7a9c" processor="flow-ref" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="10701191-ca0b-45bd-9702-3d12da7454e2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when1" doc:id="16835177-8765-4356-b082-b4f238572e2f" processor="db:update" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e8a4ea0b-baa3-476b-8dcf-7e37253c4d1a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[{affectedRows:1}]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="cef53f44-aad5-4f3e-b220-01f5798dda45" >
+				<munit:payload value='#[{  &#10;  "subject-1": 100,&#10;  "subject-2": 100,&#10;  "subject-3": 600&#10;}]' />
+				<munit:attributes value="#[{&#10;	uriParams:{&#10;		day:1&#10;	}&#10;}]" />
+			</munit:set-event>
+			<set-variable value='#[{ &#10;    "id": "a01dN00000eAC0tQAG",&#10;    "name": "Ramesh",&#10;    "email": "ramesh@example.com",&#10;    "admission_percentage": 65,&#10;    "address": "DLF",&#10;    "current_section": "A",&#10;    "cumulated_score": 0,&#10;    "days_left": 5,&#10;    "total_score": 7500,&#10;    "report_file_path": "-",&#10;    "created_date": "2025-08-08T09:42:22"&#10;}]' doc:name="Set Variable" doc:id="9aa846f7-9dd4-4888-892d-4ef7f8d53856" variableName="student" />
+			<set-variable value="#[{affectedRows:1}]" doc:name="Set Variable1" doc:id="18214108-5b05-4608-95bf-ac0976d70750" variableName="result" />
+			<flow-ref doc:name="Flow-ref to patch:\student\(ID)\update-score\(day):application\json:api-config" doc:id="de6ad2a9-6062-480a-ba7d-8c91854b9217" name="patch:\student\(ID)\update-score\(day):application\json:api-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="5b2d2710-ca6f-4201-8dd5-7a64ad5f6461" actual="#[payload.error]" expected='#["INVALID_BOOLEAN"]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="patch-update-marks-test-suite-patch:\student\(ID)\update-score\(day):application\json:api-configTest2" doc:id="cd9f7af6-e4f6-4759-9f61-406951eaa1e3" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="78b72bb3-99af-4136-8472-2510cd758879" processor="flow-ref" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="10701191-ca0b-45bd-9702-3d12da7454e2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when1" doc:id="a6ce8971-89b6-42eb-a8f1-8bdb668051c6" processor="db:update" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e8a4ea0b-baa3-476b-8dcf-7e37253c4d1a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[{affectedRows:1}]" />
+					<munit-tools:error typeId="DB:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1299b503-79a5-4798-b0b5-df520cf8b7ff" >
+				<munit:payload value='#[{  &#10;  "subject-1": 100,&#10;  "subject-2": 100,&#10;  "subject-3": 100&#10;}]' />
+				<munit:attributes value="#[{&#10;	uriParams:{&#10;		day:1&#10;	}&#10;}]" />
+			</munit:set-event>
+			<set-variable value='#[{ &#10;    "id": "a01dN00000eAC0tQAG",&#10;    "name": "Ramesh",&#10;    "email": "ramesh@example.com",&#10;    "admission_percentage": 65,&#10;    "address": "DLF",&#10;    "current_section": "A",&#10;    "cumulated_score": 0,&#10;    "days_left": 5,&#10;    "total_score": 7500,&#10;    "report_file_path": "-",&#10;    "created_date": "2025-08-08T09:42:22"&#10;}]' doc:name="Set Variable" doc:id="ba63c923-2fce-48cb-bbdf-52c909e4144e" variableName="student" />
+			<set-variable value="#[{affectedRows:1}]" doc:name="Set Variable1" doc:id="f69dca1c-d044-4ad1-9ac4-69109d9ee10e" variableName="result" />
+			<flow-ref doc:name="Flow-ref to patch:\student\(ID)\update-score\(day):application\json:api-config" doc:id="83c833a8-4bf7-42cf-91ca-2ae4d86eefa5" name="patch:\student\(ID)\update-score\(day):application\json:api-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="63608b21-d434-41c8-a0b2-a62df561a094" actual="#[payload.statusCode]" expected='#[500]' />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="get-student-score-by-id-test-suite.xml" />
+	<munit:test name="get-student-score-by-id-test-suite-get:\student\(ID)\get-score:api-configTest" doc:id="3b9bbf66-1760-40e7-bb04-1f210fc1e7dd" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="846e6ced-c21c-4649-8320-bccfda703654" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c924231c-abc4-49fa-a1bc-79c2647f5042" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "status": "success",&#10;    "message": "Student record(s) retrieved",&#10;    "data": [&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "A",&#10;            "day_of_course": 1,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 480,&#10;            "created_date": "2025-08-07T20:17:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 2,&#10;            "subject_1": 50,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 650,&#10;            "weighted_score": 390,&#10;            "created_date": "2025-08-07T23:28:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 3,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 360,&#10;            "created_date": "2025-08-07T23:36:01"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 4,&#10;            "subject_1": 300,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 900,&#10;            "weighted_score": 540,&#10;            "created_date": "2025-08-07T23:44:33"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "B",&#10;            "day_of_course": 5,&#10;            "subject_1": 400,&#10;            "subject_2": 400,&#10;            "subject_3": 400,&#10;            "days_total_marks": 1200,&#10;            "weighted_score": 960,&#10;            "created_date": "2025-08-07T23:50:13"&#10;        }&#10;    ]&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="e9f9d9dd-f635-43ed-95da-1cf0c855963c" >
+				<munit:attributes value='#[{&#10;    uriParams: {&#10;      ID: "kjsdkvskvnsnv"&#10;    }&#10;    }]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\student\(ID)\get-score:api-config" doc:id="4b832ae1-efaa-46dc-b563-7fb3c4cdc78e" name="get:\student\(ID)\get-score:api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="294ede9f-7dd0-438c-9cd7-5b4ff4684433" actual="#[payload]" expected='#[{&#10;    "status": "success",&#10;    "message": "Student record(s) retrieved",&#10;    "data": [&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "A",&#10;            "day_of_course": 1,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 480,&#10;            "created_date": "2025-08-07T20:17:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 2,&#10;            "subject_1": 50,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 650,&#10;            "weighted_score": 390,&#10;            "created_date": "2025-08-07T23:28:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 3,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 360,&#10;            "created_date": "2025-08-07T23:36:01"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 4,&#10;            "subject_1": 300,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 900,&#10;            "weighted_score": 540,&#10;            "created_date": "2025-08-07T23:44:33"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "B",&#10;            "day_of_course": 5,&#10;            "subject_1": 400,&#10;            "subject_2": 400,&#10;            "subject_3": 400,&#10;            "days_total_marks": 1200,&#10;            "weighted_score": 960,&#10;            "created_date": "2025-08-07T23:50:13"&#10;        }&#10;    ]&#10;}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-student-score-by-id-test-suite-fetch-student-marks-by-id-and-day-sub-flowTest" doc:id="c4f02134-d462-411e-861a-6699fcd91ca7" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="396755d0-3eba-4d0a-a6ae-fbf892229699" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1ea34450-be42-4be0-b677-273deff22b04" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[{"id":"a01dN00000e7UlzQAE","section":"A","day_of_course":1,"subject_1":200,"subject_2":200,"subject_3":200,"days_total_marks":600,"weighted_score":480,"created_date":"2025-08-07T20:17:02"}&#10;,{"id":"a01dN00000e7UlzQAE","section":"C","day_of_course":2,"subject_1":50,"subject_2":300,"subject_3":300,"days_total_marks":650,"weighted_score":390,"created_date":"2025-08-07T23:28:02"}&#10;,{"id":"a01dN00000e7UlzQAE","section":"C","day_of_course":3,"subject_1":200,"subject_2":200,"subject_3":200,"days_total_marks":600,"weighted_score":360,"created_date":"2025-08-07T23:36:01"}&#10;,{"id":"a01dN00000e7UlzQAE","section":"C","day_of_course":4,"subject_1":300,"subject_2":300,"subject_3":300,"days_total_marks":900,"weighted_score":540,"created_date":"2025-08-07T23:44:33"}&#10;,{"id":"a01dN00000e7UlzQAE","section":"B","day_of_course":5,"subject_1":400,"subject_2":400,"subject_3":400,"days_total_marks":1200,"weighted_score":960,"created_date":"2025-08-07T23:50:13"}]]' mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="0499d206-4962-43c0-a431-e5d4deeab4ae" >
+				<munit:attributes value='#[{&#10;    uriParams: {&#10;      ID: "a01dN00000eAC0tQAG"&#10;    }&#10;    &#10;    }]' />
+				<munit:variables >
+					<munit:variable key="ID" value="a01dN00000eAC0tQAG" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to fetch-student-marks-by-id-and-day-sub-flow" doc:id="fbf90c32-59f9-413c-b94a-35d701587525" name="fetch-student-marks-by-id-and-day-sub-flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="d9e756a0-5acb-495f-ab79-f18c09fc947a" actual="#[payload]" expected='#[{&#10;    "status": "success",&#10;    "message": "Student record(s) retrieved",&#10;    "data": [&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "A",&#10;            "day_of_course": 1,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 480,&#10;            "created_date": "2025-08-07T20:17:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 2,&#10;            "subject_1": 50,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 650,&#10;            "weighted_score": 390,&#10;            "created_date": "2025-08-07T23:28:02"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 3,&#10;            "subject_1": 200,&#10;            "subject_2": 200,&#10;            "subject_3": 200,&#10;            "days_total_marks": 600,&#10;            "weighted_score": 360,&#10;            "created_date": "2025-08-07T23:36:01"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "C",&#10;            "day_of_course": 4,&#10;            "subject_1": 300,&#10;            "subject_2": 300,&#10;            "subject_3": 300,&#10;            "days_total_marks": 900,&#10;            "weighted_score": 540,&#10;            "created_date": "2025-08-07T23:44:33"&#10;        },&#10;        {&#10;            "id": "a01dN00000e7UlzQAE",&#10;            "section": "B",&#10;            "day_of_course": 5,&#10;            "subject_1": 400,&#10;            "subject_2": 400,&#10;            "subject_3": 400,&#10;            "days_total_marks": 1200,&#10;            "weighted_score": 960,&#10;            "created_date": "2025-08-07T23:50:13"&#10;        }&#10;    ]&#10;}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-student-score-by-id-test-suite-fetch-student-marks-by-id-and-day-sub-flowTest2" doc:id="c4c11942-00ee-4c58-8129-391172410d7a" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="dee89acf-d650-42dc-a6d0-07052fcfc118" processor="db:select" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1ea34450-be42-4be0-b677-273deff22b04" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[{"id":"a01dN00000e7UlzQAE","section":"A","day_of_course":1,"subject_1":200,"subject_2":200,"subject_3":200,"days_total_marks":600,"weighted_score":480,"created_date":"2025-08-07T20:17:02"}&#10;,{"id":"a01dN00000e7UlzQAE","section":"C","day_of_course":2,"subject_1":50,"subject_2":300,"subject_3":300,"days_total_marks":650,"weighted_score":390,"created_date":"2025-08-07T23:28:02"}&#10;,{"id":"a01dN00000e7UlzQAE","section":"C","day_of_course":3,"subject_1":200,"subject_2":200,"subject_3":200,"days_total_marks":600,"weighted_score":360,"created_date":"2025-08-07T23:36:01"}&#10;,{"id":"a01dN00000e7UlzQAE","section":"C","day_of_course":4,"subject_1":300,"subject_2":300,"subject_3":300,"days_total_marks":900,"weighted_score":540,"created_date":"2025-08-07T23:44:33"}&#10;,{"id":"a01dN00000e7UlzQAE","section":"B","day_of_course":5,"subject_1":400,"subject_2":400,"subject_3":400,"days_total_marks":1200,"weighted_score":960,"created_date":"2025-08-07T23:50:13"}]]' mediaType="application/java" />
+					<munit-tools:error typeId="DB:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="91bc1f03-af60-4994-ad6b-478a53637efa" >
+				<munit:attributes value='#[{&#10;    uriParams: {&#10;      ID: "a01dN00000eAC0tQAG"&#10;    }&#10;    &#10;    }]' />
+				<munit:variables >
+					<munit:variable key="ID" value="a01dN00000eAC0tQAG" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to fetch-student-marks-by-id-and-day-sub-flow" doc:id="5b31274b-ef68-4d7f-b39b-28e751d6d201" name="fetch-student-marks-by-id-and-day-sub-flow" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="54ab6f8e-462c-4bdd-aaeb-b0f2263c7aff" actual="#[payload.statusCode]" expected='#[500]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-student-score-by-id-test-suite-fetch-student-marks-by-id-and-day-sub-flowTest3" doc:id="91af31f6-7189-402e-b063-9014f61defd8" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="37663ca8-4646-4728-a3c5-7d62b056ce38" processor="db:select" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1ea34450-be42-4be0-b677-273deff22b04" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:BAD_SQL_SYNTAX" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="9fb50369-7599-4a3e-8736-142b884698b8" >
+				<munit:attributes value='#[{&#10;    uriParams: {&#10;      ID: "a01dN00000eAC0tQAG"&#10;    }&#10;    &#10;    }]' />
+				<munit:variables >
+					<munit:variable key="ID" value="a01dN00000eAC0tQAG" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to fetch-student-marks-by-id-and-day-sub-flow" doc:id="a83ab215-e37d-4f49-a08d-f901a2a85891" name="fetch-student-marks-by-id-and-day-sub-flow" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c3b12dce-7e94-41e6-861f-599de37557e6" actual="#[payload.statusCode]" expected="#[400]" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="patch-student-by-id-test-suite.xml" />
+	<munit:test name="patch-student-by-id-test-suite-patch:\students\(ID):application\json:api-configTest" doc:id="eaa13de6-4603-4ce2-8236-c7508beba726" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d26cb6c9-7a0a-49d3-846b-61e154e9d8ed" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e8fc3313-fe3f-4a56-8b34-44673e1b69a1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;	current_section:"A"&#10;}]' mediaType="application/java" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f193d6fd-0807-433a-9dd1-131237e51280" processor="db:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d24766ee-6f84-4473-b8e3-aa5ee7b4b2cf" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="a592f7ce-0b38-4ec5-a88a-00ba20451259" >
+				<munit:payload value='#[{&#10;	current_section:"A"&#10;}]' />
+				<munit:attributes value='#[{&#10;    uriParams: {&#10;      ID: "a01dN00000eAC0tQG"&#10;    }&#10;    &#10;    }]' />
+			</munit:set-event>
+			<set-variable value='#[{&#10;    "id": "a01dN00000djyg2QAA",&#10;    "section": "A",&#10;    "day_of_course": 8,&#10;    "subject_1": 0,&#10;    "subject_2": 0,&#10;    "subject_3": 0,&#10;    "days_total_marks": 0,&#10;    "weighted_score": 0,&#10;    "created_date": "2025-08-05 20:09:01"&#10;  }]' doc:name="Set Variable" doc:id="8fe01fd2-9671-460f-a6d4-c0b894746423" variableName="temp" />
+			<flow-ref doc:name="Flow-ref to patch:\students\(ID):application\json:api-config" doc:id="a9176d38-3dc5-492c-9803-f7a4d0a6e4cc" name="patch:\students\(ID):application\json:api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="429ef06c-348a-4ef1-a504-c84cc608fe11" actual="#[payload]" expected='#[{&#10;    "message": "Student updated successfully"&#10;}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="patch-student-by-id-test-suite-patch:\students\(ID):application\json:api-configTest1" doc:id="236c4264-9d8d-4071-9966-6f40480d5bc9" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7c4c6489-87f5-4aa8-9a13-038c39d49095" processor="flow-ref" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e8fc3313-fe3f-4a56-8b34-44673e1b69a1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when1" doc:id="edd7f3bb-9053-42f7-93c9-24bde219faca" processor="db:update" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e8a4ea0b-baa3-476b-8dcf-7e37253c4d1a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#[{&#10;    "statusCode": 404,&#10;    "message": "Student not found"&#10;}]' doc:name="Set Variable" doc:id="0dde816e-6757-42b7-a4a5-1d4f560297c0" variableName="temp"/>
+			<flow-ref doc:name="Flow-ref to patch:\students\(ID):application\json:api-config" doc:id="7e43b473-a2b6-41bc-a69e-c37cff70d376" name="patch:\students\(ID):application\json:api-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="b6c5eb62-83a1-41f8-a979-c60b254b8da8" actual="#[payload]" expected='#[{&#10;    "statusCode": 404,&#10;    "message": "Student not found"&#10;}]' />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

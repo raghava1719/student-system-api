@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="get-student-details-by-ID-test-suite.xml" />
+	<munit:test name="get-student-details-by-ID-test-suite-get:\students:api-configTest" doc:id="ea7db540-08c9-4d4a-b160-05523b295d67" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b9b7a974-0b65-4138-9955-e7974f158c28" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="505bf3ad-bae3-4274-8808-0ea1de40767e" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;    "id": "a01dN00000eAC0tQAG",&#10;    "name": "Ramesh",&#10;    "email": "ramesh@example.com",&#10;    "admission_percentage": 65,&#10;    "address": "DLF",&#10;    "current_section": "A",&#10;    "cumulated_score": 0,&#10;    "days_left": 5,&#10;    "total_score": 7500,&#10;    "report_file_path": "-",&#10;    "created_date": "2025-08-08T09:42:22"&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="2f813311-4fe2-472c-9285-82c0a97cf573" >
+				<munit:attributes value='#[{&#10;    queryParams: {&#10;      id: "a01dN00000eAC0tQAG"&#10;    }&#10;    &#10;    }]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\students:api-config" doc:id="c55f7fbe-7d39-4a5a-9b5f-a65192cfe0d8" name="get:\students:api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="a912414e-810f-4ef5-935c-49fff90207fa" actual="#[payload]" expected='#[{&#10;    "id": "a01dN00000eAC0tQAG",&#10;    "name": "Ramesh",&#10;    "email": "ramesh@example.com",&#10;    "admission_percentage": 65,&#10;    "address": "DLF",&#10;    "current_section": "A",&#10;    "cumulated_score": 0,&#10;    "days_left": 5,&#10;    "total_score": 7500,&#10;    "report_file_path": "-",&#10;    "created_date": "2025-08-08T09:42:22"&#10;}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get-student-details-by-ID-test-suite-fetch-students-detailsTest" doc:id="d8a9a254-e361-43a9-8362-28db72d76e31" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c95b27cc-3190-4be0-bf74-89066f22bfcc" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0090eb12-69ca-427a-bf9a-62ebcf78d2ba" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value="a01dN00000eAC0tQAG" doc:name="Set Variable" doc:id="25163b6f-bfbe-46a5-a062-214c1e39c3fb" variableName="id"/>
+			<munit:set-event doc:name="Set Event" doc:id="50c9d29d-7478-43f9-903c-dc616d3bab98">
+				<munit:attributes value='#[{&#10;    queryParams: {&#10;      id: "a01dN00000eAC0tQAG"&#10;    }&#10;    &#10;    }]' />
+			</munit:set-event>
+			<set-variable value='#[[{&#10;    "id": "a01dN00000eAC0tQAG",&#10;    "name": "Ramesh",&#10;    "email": "ramesh@example.com",&#10;    "admission_percentage": 65,&#10;    "address": "DLF",&#10;    "current_section": "A",&#10;    "cumulated_score": 0,&#10;    "days_left": 5,&#10;    "total_score": 7500,&#10;    "report_file_path": "-",&#10;    "created_date": "2025-08-08T09:42:22"&#10;}]]' doc:name="Set Variable" doc:id="d0ac859a-2df7-42de-a043-06aebaa1f3b0" variableName="result"/>
+			<flow-ref doc:name="Flow-ref to fetch-students-details" doc:id="228cdbfa-6024-4d3a-91e9-5dcb75408154" name="fetch-students-details"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="3b8d7385-a79c-451d-bfe2-1990eca2c292" actual="#[payload]" expected='#[[{&#10;    "id": "a01dN00000eAC0tQAG",&#10;    "name": "Ramesh",&#10;    "email": "ramesh@example.com",&#10;    "admission_percentage": 65,&#10;    "address": "DLF",&#10;    "current_section": "A",&#10;    "cumulated_score": 0,&#10;    "days_left": 5,&#10;    "total_score": 7500,&#10;    "report_file_path": "-",&#10;    "created_date": "2025-08-08T09:42:22"&#10;}]]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
