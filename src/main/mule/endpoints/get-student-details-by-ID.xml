@@ -67,7 +67,7 @@ else
 				<ee:variables />
 			</ee:transform>
 			<error-handler>
-					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e6d8ae27-3c95-4a9b-8cf6-1e9d2ca2a15f" type="DB:QUERY_EXECUTION">
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e6d8ae27-3c95-4a9b-8cf6-1e9d2ca2a15f" type="DB:BAD_SQL_SYNTAX, DB:CONNECTIVITY, DB:QUERY_EXECUTION, DB:RETRY_EXHAUSTED">
 						<ee:transform doc:name="Transform Message" doc:id="6491fcaa-4b6a-415e-9722-5d5549219d51">
 							<ee:message>
 								<ee:set-payload><![CDATA[%dw 2.0
@@ -88,25 +88,6 @@ var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }
 							</ee:variables>
 						</ee:transform>
 					</on-error-continue>
-					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6bd83902-3103-42bd-ab4d-337ccef65035" type="DB:CONNECTIVITY">
-						<logger level="WARN" doc:name="Logger" doc:id="2352650f-a054-43de-b72e-022bd977b550" message='#["Connecting issue to Database ...Retrying...."]' />
-						<ee:transform doc:name="Transform Message" doc:id="d253ec4f-50a7-495e-ae2e-a1bc3a5d169d">
-							<ee:message>
-								<ee:set-payload><![CDATA[%dw 2.0
-output application/json
-var timestamp = now() as String { format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" }	
----
-{
-	"statusCode":500,
-  "error": error.errorType.identifier,
-  "errorMessage": error.description,
-  "correlationId": correlationId,
-  "timestamp": timestamp
-}
- ]]></ee:set-payload>
-							</ee:message>
-						</ee:transform>
-					</on-error-propagate>
 				</error-handler>
 			</try>
 	</sub-flow>

@@ -1,0 +1,26 @@
+%dw 2.0
+
+type auto_b4864a54_b9d2_413b_8e6b_1ada3085f290_Output_Variables_rootMessage = {|
+  payload: Array<{|    student_id?: String,     course_day?: Number {"typeId": "int"},     section?: String,     subject1_score?: Number {"typeId": "int"},     subject2_score?: Number {"typeId": "int"},     subject3_score?: Number {"typeId": "int"},     total_marks_section?: Number {"typeId": "int"},     accumulated_score?: Number {"typeId": "int"},     created_at?: String  |}> {"example": "[{\\\"student_id\\\":\\\"SF1001\\\",\\\"course_day\\\":3,\\\"section\\\":\\\"C\\\",\\\"subject1_score\\\":80,\\\"subject2_score\\\":85,\\\"subject3_score\\\":90,\\\"total_marks_section\\\":900,\\\"accumulated_score\\\":220,\\\"created_at\\\":\\\"2025-08-02T10:15:00Z\\\"}]"}, 
+  attributes: {|
+    clientCertificate?: {|
+      publicKey?: {|  |}, 
+      "type"?: String, 
+      encoded?: Binary
+    |}, 
+    headers: {|  |}, 
+    listenerPath: String, 
+    method: String, 
+    queryParams: {|  |}, 
+    queryString: String, 
+    relativePath: String, 
+    remoteAddress: String, 
+    requestPath: String, 
+    requestUri: String, 
+    scheme: String, 
+    uriParams: {|  |}, 
+    version: String, 
+    localAddress: String
+  |}
+|} {"typeId": "org.mule.runtime.api.message.Message"}
+

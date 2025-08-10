@@ -6,10 +6,25 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
-	<sub-flow name="validate-marks" doc:id="266ea2fc-f8c8-4e33-8d52-7eac03694fc6" >
-		<ee:transform doc:name="Transform Message" doc:id="fa10b7a9-ed0f-4e3d-aee9-d15d920429cb" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+	<flow name="patch:\student\(ID)\update-score\(day):application\json:api-config" doc:id="2d8ebbca-76f6-42e2-8798-fcd280d2b05f" >
+		<ee:transform doc:name="Transform Message" doc:id="66148409-3678-4dda-b0df-ceb873eb5f25">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="id"><![CDATA[attributes.uriParams.ID]]></ee:set-variable>
+				<ee:set-variable variableName="day"><![CDATA[attributes.uriParams.day as Number]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="fetch student details" doc:id="10701191-ca0b-45bd-9702-3d12da7454e2" name="fetch-students-details" target="student"/>
+		<validation:is-true doc:name="validate if student exist" doc:id="a230d569-45e1-4c9c-94b3-033e0093b0ba" config-ref="Validation_Config" expression="#[vars.student.statusCode != 404]" message="#[vars.student.message]"/>
+		<validation:is-true doc:name="day validation status" doc:id="334eba7b-2a04-4369-9f53-2032ad562405" config-ref="Validation_Config" expression="#[(vars.day == 6 - vars.student.days_left) ]" message='#["Only day " ++ 6 - vars.student.days_left as Number ++" record is accepted."]'/>
+		<ee:transform doc:name="Transform Message" doc:id="fa10b7a9-ed0f-4e3d-aee9-d15d920429cb">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 var section_marks = {
 	"A":1500,
@@ -36,25 +51,6 @@ else
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-	</sub-flow>
-	<flow name="patch:\student\(ID)\update-score\(day):application\json:api-config" doc:id="2d8ebbca-76f6-42e2-8798-fcd280d2b05f" >
-		<ee:transform doc:name="Transform Message" doc:id="66148409-3678-4dda-b0df-ceb873eb5f25" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-payload]]></ee:set-payload>
-			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="id" ><![CDATA[attributes.uriParams.ID]]></ee:set-variable>
-				<ee:set-variable variableName="day" ><![CDATA[attributes.uriParams.day as Number]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<flow-ref doc:name="fetch student details" doc:id="10701191-ca0b-45bd-9702-3d12da7454e2" name="fetch-students-details" target="student"/>
-		<logger level="INFO" doc:name="Logger" doc:id="2099e069-4756-48ae-81f3-74432a27d789" message="#[vars.student]"/>
-		<validation:is-true doc:name="validate if student exist" doc:id="a230d569-45e1-4c9c-94b3-033e0093b0ba" config-ref="Validation_Config" expression="#[vars.student.statusCode != 404]" message="#[vars.student.message]"/>
-		<validation:is-true doc:name="day validation status" doc:id="334eba7b-2a04-4369-9f53-2032ad562405" config-ref="Validation_Config" expression="#[(vars.day == 6 - vars.student.days_left) ]" message='#["Only day " ++ 6 - vars.student.days_left as Number ++" record is accepted."]'/>
-		<flow-ref doc:name="validate marks" doc:id="361e066a-85fd-4841-aefd-ae5191d40a76" name="validate-marks"/>
 		<validation:is-true doc:name="marks validation status" doc:id="9e313886-26f3-49c4-b15e-e9e46efb94ae" config-ref="Validation_Config" expression="#[payload.status]" message="#[payload.message]"/>
 		<db:update doc:name="Update" doc:id="e8a4ea0b-baa3-476b-8dcf-7e37253c4d1a" config-ref="Database_Config" target="result">
 			<db:sql ><![CDATA[

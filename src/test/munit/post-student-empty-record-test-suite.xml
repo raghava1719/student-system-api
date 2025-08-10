@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="post-student-empty-record-test-suite.xml" />
+	<munit:test name="post-student-empty-record-test-suite-post:\students\empty-record:application\json:api-configTest" doc:id="eb279cba-a70d-407c-bea7-916466ab9bb2" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f667b347-b0db-4014-b131-93ea8b2ff930" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="19fc6a08-1101-45fa-bd13-cd555b6d5065" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="59351727-92c6-466f-882a-55febfde9a33" >
+				<munit:payload value='#[[  {&#10;    "id": "a01dN00000djyg2QAA",&#10;    "section": "A",&#10;    "day_of_course": 8,&#10;    "subject_1": 0,&#10;    "subject_2": 0,&#10;    "subject_3": 0,&#10;    "days_total_marks": 0,&#10;    "weighted_score": 0,&#10;    "created_date": "2025-08-05 20:09:01"&#10;  }&#10;]]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\students\empty-record:application\json:api-config" doc:id="f4cecf23-3f7e-4ce1-a245-7df9010c902d" name="post:\students\empty-record:application\json:api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="84e16b67-418b-4b00-a62e-37a80ff5580d" actual="#[payload]" expected='#[{&#10;	statusCode:200,&#10;    message:"All records inserted successfully"&#10;    }]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post-student-empty-record-test-suite-insert-empty-single-recordTest" doc:id="06c245fa-751f-4341-9abc-1ce967780381" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0f45ddc4-5c94-4c85-9585-f56b6b4f70a6" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="04f8cfab-6c81-4ef3-9903-c8436aa3875e" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1599c8d7-7904-4604-968e-8b7646a7d3bd" >
+				<munit:payload value='#[{&#10;    "id": "a01dN00000djyg2QAA",&#10;    "section": "A",&#10;    "day_of_course": 8,&#10;    "subject_1": 0,&#10;    "subject_2": 0,&#10;    "subject_3": 0,&#10;    "days_total_marks": 0,&#10;    "weighted_score": 0,&#10;    "created_date": "2025-08-05 20:09:01"&#10;  }]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to insert-empty-single-record" doc:id="531be355-b8a1-4b92-a0cd-30c28be1bb49" name="insert-empty-single-record"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

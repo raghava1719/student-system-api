@@ -2,12 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>8b81c0fb-b4b0-4dc3-ab37-efab51816ea1</groupId>
+	<groupId> 523b8a7a-6aa0-425c-88b6-4c186e938f77 </groupId>
 
-	<artifactId>student-managment-runtime</artifactId>
-	
-<version>3.0.7-SNAPSHOT</version>
-
+	<artifactId>student-database-system-application-runtime</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<packaging>mule-application</packaging>
 
@@ -17,12 +15,13 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<group-id>8b81c0fb-b4b0-4dc3-ab37-efab51816ea1</group-id>
+		<group-id> 523b8a7a-6aa0-425c-88b6-4c186e938f77 </group-id>
 		<app.runtime>4.9.0</app.runtime>
 		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
 		<tags/>
 		<categories>[]</categories>
 		<fields>[]</fields>
+		<munit.version>3.4.0</munit.version>
 	</properties>
 
 	<build>
@@ -53,7 +52,7 @@
 						</properties>
 						<applicationName>student-system-api</applicationName>
 						<replicas>1</replicas>
-						<vCores>0.1</vCores>
+						<vCores>1</vCores>
 						<skipDeploymentVerification>${skipDeploymentVerification}</skipDeploymentVerification>
 						<integrations>
 							<services>
@@ -69,6 +68,29 @@
 							<artifactId>mysql-connector-java</artifactId>
 						</sharedLibrary>
 					</sharedLibraries>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mulesoft.munit.tools</groupId>
+				<artifactId>munit-maven-plugin</artifactId>
+				<version>${munit.version}</version>
+				<executions>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+							<goal>coverage-report</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<coverage>
+						<runCoverage>true</runCoverage>
+						<formats>
+							<format>html</format>
+						</formats>
+					</coverage>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -89,7 +111,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${group-id}</groupId>
-			<artifactId>inschoolforaweek</artifactId>
+			<artifactId>student-database-system-application</artifactId>
 			<version>1.0.0</version>
 			<classifier>raml</classifier>
 			<type>zip</type>
@@ -128,6 +150,26 @@
 			<artifactId>mule-validation-module</artifactId>
 			<version>2.0.6</version>
 			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>munit-runner</artifactId>
+			<version>3.4.0</version>
+			<classifier>mule-plugin</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>munit-tools</artifactId>
+			<version>3.4.0</version>
+			<classifier>mule-plugin</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.weave</groupId>
+			<artifactId>assertions</artifactId>
+			<version>1.2.1</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

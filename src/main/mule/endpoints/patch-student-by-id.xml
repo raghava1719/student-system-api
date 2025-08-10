@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
 	<flow name="patch:\students\(ID):application\json:api-config" doc:id="3e674a29-b580-4d7e-bb4c-aab18b343d68" >
-		<ee:transform doc:name="Transform Message" doc:id="6fb0247a-51b2-4ff0-8122-fde81ce59103" >
+		<ee:transform doc:name="set ID" doc:id="6fb0247a-51b2-4ff0-8122-fde81ce59103" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -38,8 +39,13 @@ var updates =
 				<ee:set-variable variableName="ID" ><![CDATA[attributes.uriParams.'ID']]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<flow-ref doc:name="Flow Reference" doc:id="b9814c1f-edde-4c04-b6b3-4daf6cd382e7" name="conditional-student-update-sub-flow"/>
-		<ee:transform doc:name="Transform Message1" doc:id="a850cbf5-fedd-407d-93ad-ad1ec53a66da" >
+		<db:update doc:name="Update" doc:id="d24766ee-6f84-4473-b8e3-aa5ee7b4b2cf" config-ref="Database_Config">
+			<db:sql><![CDATA[#[payload]]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	studentId:vars.ID
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="success message" doc:id="a850cbf5-fedd-407d-93ad-ad1ec53a66da" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -62,6 +68,21 @@ vars.temp]]></ee:set-payload>
 					<ee:variables >
 						<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
 					</ee:variables>
+				</ee:transform>
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3dbcfa84-a7f7-4872-82a2-f6c7ba609b84" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="49bf5413-25b7-4d99-a594-d5f16907dd28" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: 500,
+	 errorType: error.errorType.identifier,
+  message_from_system:error.description
+	
+}]]></ee:set-payload>
+					</ee:message>
 				</ee:transform>
 			</on-error-continue>
 		</error-handler>

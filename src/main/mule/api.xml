@@ -9,8 +9,7 @@
                 <http:body><![CDATA[#[payload]]]></http:body>
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
-        </http:listener>	
-<set-variable variableName="correlationId" value="#[attributes.headers.'x-correlation-id' default correlationId]" />
+        </http:listener>
 
 		<apikit:router config-ref="api-config" />
 		<error-handler ref="global-error-handler-error-handler" />
